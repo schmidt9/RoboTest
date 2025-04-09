@@ -5,7 +5,7 @@ from ultralytics import YOLO
 # https://docs.ultralytics.com/modes/track/#tracker-selection
 def track():
     # Load the YOLO11 model
-    model = YOLO("yolo11n_rknn_model/yolo11n-rk3566.rknn")
+    model = YOLO("yolo11n_rknn_model/yolo11n-rk3566.rknn", task='detect')
 
     cap = cv2.VideoCapture(0)
 
@@ -34,3 +34,6 @@ def track():
     # Release the video capture object and close the display window
     cap.release()
     cv2.destroyAllWindows()
+    
+    
+track()
