@@ -5,7 +5,7 @@ from ultralytics import YOLO
 # https://docs.ultralytics.com/modes/track/#tracker-selection
 def track():
     # Load the YOLO11 model
-    model = YOLO("yolo11n.pt")
+    model = YOLO("yolo11n_rknn_model/yolo11n-rk3566.rknn")
 
     cap = cv2.VideoCapture(0)
 
@@ -16,7 +16,7 @@ def track():
 
         if success:
             # Run YOLO11 tracking on the frame, persisting tracks between frames
-            results = model.track(frame, persist=True)
+            results = rknn_model(frame)
 
             # Visualize the results on the frame
             annotated_frame = results[0].plot()
