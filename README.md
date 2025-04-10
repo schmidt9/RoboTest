@@ -10,7 +10,10 @@ https://ftrg.zbox.filez.com/v2/delivery/data/95f00b0fc900458ba134f8b180b3f7a1/ex
 
 ```
 python convert.py /home/orangepi/sambashare/YoloTest/yolo11n.onnx rk3566 i8 /home/orangepi/sambashare/YoloTest/yolo11n.rknn
+```
 
+## test 
+```
 python yolo11.py --model_path /home/orangepi/sambashare/YoloTest/yolo11n.rknn --target rk3566 --img_show
 ```
 
