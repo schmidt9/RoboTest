@@ -2,7 +2,7 @@ from ultralytics import YOLO
 
 
 def export_to_rknn():
-    # Load the YOLO11 model 222
+    # Load the YOLO11 model
     model = YOLO("yolo11n.pt")
 
     # Export the model to RKNN format

@@ -16,7 +16,7 @@ def track():
 
         if success:
             # Run YOLO11 tracking on the frame, persisting tracks between frames
-            results = rknn_model(frame)
+            results = model.track(frame, persist=True)
 
             # Visualize the results on the frame
             annotated_frame = results[0].plot()
