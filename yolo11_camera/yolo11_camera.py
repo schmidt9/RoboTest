@@ -1,8 +1,8 @@
 import os
 import cv2
-import sys
 import datetime as dt
 
+from pathlib import Path
 from coco_utils import COCO_test_helper
 from rknn_executor import RKNN_model_container
 import numpy as np
@@ -20,8 +20,9 @@ CLASSES = ("person", "bicycle", "car","motorbike ","aeroplane ","bus ","train","
            "spoon","bowl","banana","apple","sandwich","orange","broccoli","carrot","hot dog","pizza ","donut","cake","chair","sofa",
            "pottedplant","bed","diningtable","toilet ","tvmonitor","laptop  ","mouse    ","remote ","keyboard ","cell phone","microwave ",
            "oven ","toaster","sink","refrigerator ","book","clock","vase","scissors ","teddy bear ","hair drier", "toothbrush ")
-           
-MODEL_PATH="../models/yolo11n.rknn"
+
+root_path = Path(__file__).parent.parent
+MODEL_PATH=f"{root_path}/models/yolo11n.rknn"
 
 def filter_boxes(boxes, box_confidences, box_class_probs):
     """Filter boxes with object threshold.
