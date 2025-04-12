@@ -14,3 +14,6 @@ python -m pip install sounddevice
 
 - list record devices
 arecord -l
+
+- list playback devices
+aplay -l
