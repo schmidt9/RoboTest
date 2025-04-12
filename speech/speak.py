@@ -2,6 +2,7 @@ import torch
 import sounddevice as sd
 import time
 from pathlib import Path
+import microphone_utils
 
 root_path = Path(__file__).parent
 local_file_ru = f'{root_path}/silero/v4_ru.pt'
@@ -29,11 +30,17 @@ def speak(text: str):
                             put_accent=put_accent,
                             put_yo=put_yo)
 
-    print(f"Got audio with length {len(audio)}")
+    print(f"Got audio with length {len(audio)}, start playing")
+
+    microphone_utils.toggle_microphone(False)
 
     sd.play(audio, sample_rate)
     time.sleep((len(audio) / (sample_rate)) + 0.5)
     sd.stop()
+
+    microphone_utils.toggle_microphone(True)
+
+    print("Finished playing")
 
     del audio  # освобождаем память
 

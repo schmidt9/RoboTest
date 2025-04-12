@@ -1,11 +1,12 @@
+import os
 import sounddevice as sd
 import vosk
 import json
 import queue
 from pathlib import Path
 import commands
+import microphone_utils
 
-device_m = 2                                                    # Индекс аудиоустройства (микрофон)
 root_path = Path(__file__).parent
 model_path=f"{root_path}/vosk/vosk-model-small-ru-0.22"
 model = vosk.Model(model_path)                                  # Модель нейросети
@@ -20,7 +21,11 @@ def q_callback(indata, frames, time, status):
 def voice_listen():
     print("Start listening to voice")
 
-    with sd.RawInputStream(callback=q_callback, channels=1, samplerate=samplerate, device=device_m, dtype='int16'):
+    with sd.RawInputStream(callback=q_callback, 
+                           channels=1, 
+                           samplerate=samplerate, 
+                           device=microphone_utils.microphone_device_id, 
+                           dtype='int16'):
         rec = vosk.KaldiRecognizer(model, samplerate)
 
         sd.sleep(-20)
