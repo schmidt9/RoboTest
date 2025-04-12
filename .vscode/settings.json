@@ -1,6 +1,7 @@
 {
-    "editor.defaultFormatter": "KevinRose.vsc-python-indent",
+    "editor.defaultFormatter": "ms-python.autopep8",
     "[python]": {
         "editor.defaultFormatter": "ms-python.autopep8"
-    }
+    },
+    "notebook.defaultFormatter": "ms-python.autopep8"
 }
