@@ -22,7 +22,7 @@ model.to(device)
 sd.default.device = 0  # аудиоустройство для вывода
 
 def speak(text: str):
-    print(f"Starting text-to-speech for text'{text}'")
+    print(f"Starting text-to-speech for text '{text}'")
 
     audio = model.apply_tts(text=text + "..",
                             speaker=speaker,

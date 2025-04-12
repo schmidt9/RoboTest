@@ -1,9 +1,13 @@
+import datetime
 import fuzzywuzzy.fuzz
+import num2t4ru
+import speak
+import pytz
 
 command_dic = {
     "help": ('список команд', 'команды', 'что ты умеешь', 'твои навыки', 'навыки'),
     "about": ('расскажи о себе', 'что ты такое', 'ты кто', 'о себе'),
-    "ctime": ('время', 'текущее время', 'сейчас времени', 'который час', 'сколько время')
+    "ctime": ('время', 'текущее время', 'сейчас времени', 'который час', 'сколько время', 'скажи время')
 }
 
 
@@ -45,4 +49,13 @@ def f_about():
 
 
 def f_ctime():
-    print("ВРЕМЯ")
+    timezone = pytz.timezone("Europe/Moscow")
+    now = datetime.datetime.now().astimezone(timezone)
+    text = "Сейчас "
+    text += num2t4ru.num2text(int(now.hour)) + '.'
+
+    if now.minute < 10:
+        text += "ноль "
+
+    text += num2t4ru.num2text(int(now.minute)) + '.'
+    speak.speak(text)
