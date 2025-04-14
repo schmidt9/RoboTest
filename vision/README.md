@@ -20,8 +20,6 @@ python yolo11.py --model_path /home/orangepi/sambashare/YoloTest/yolo11n.rknn --
 # Troubleshooting
 
 ## fix for "Invalid RKNN model version 6"
-replace librknnrt.so in /usr/lib with version from this directory (taken from https://github.com/airockchip/rknn-toolkit2/blob/master/rknpu2/runtime/Linux/librknn_api/aarch64/librknnrt.so)
+replace/add librknnrt.so in /usr/lib (or /usr/lib64) with version from this directory (taken from https://github.com/airockchip/rknn-toolkit2/blob/master/rknpu2/runtime/Linux/librknn_api/aarch64/librknnrt.so)
 
-https://pypi.org/project/rknn-toolkit-lite2/2.3.2/#files
-pip install rknn_toolkit_lite2-2.3.2-cp310-cp310-manylinux_2_17_aarch64.whl
 
