@@ -5,12 +5,15 @@ import queue
 from pathlib import Path
 import commands
 import microphone_utils
+import notifications
 
 root_path = Path(__file__).parent
 model_path=f"{root_path}/vosk/vosk-model-small-ru-0.22"
 model = vosk.Model(model_path)                                  # Модель нейросети
 samplerate = 44100                                              # Частота дискретизации микрофона
 q = queue.Queue()                                               # Потоковый контейнер
+
+should_recognize_command = False
 
 
 def q_callback(indata, frames, time, status):
@@ -35,8 +38,18 @@ def voice_listen():
                 res = json.loads(rec.Result())["text"]
                 if res:
                     print(f"Фраза целиком: {res}")
-                    commands.recognize_command(res)
-                    break
+
+                    global should_recognize_command
+
+                    if commands.recognize_name(res):
+                        should_recognize_command = True
+                        notifications.play_name_notification()
+                    else:
+                        if should_recognize_command:
+                            is_command_recognized = commands.recognize_command(res)
+
+                            if is_command_recognized:
+                                should_recognize_command = False
             else:
                 res = json.loads(rec.PartialResult())["partial"]
                 if res:

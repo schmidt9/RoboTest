@@ -5,15 +5,24 @@ import speak
 import pytz
 
 command_dic = {
-    "help": ('список команд', 'команды', 'что ты умеешь', 'твои навыки', 'навыки'),
-    "about": ('расскажи о себе', 'что ты такое', 'ты кто', 'о себе'),
-    "ctime": ('время', 'текущее время', 'сейчас времени', 'который час', 'сколько время', 'скажи время')
+    "help": ("список команд", "команды", "что ты умеешь", "твои навыки", "навыки"),
+    "about": ("расскажи о себе", "что ты такое", "ты кто", "о себе"),
+    "ctime": (
+        "время",
+        "текущее время",
+        "сейчас времени",
+        "который час",
+        "сколько время",
+        "скажи время",
+    ),
 }
+
+name_alias = "привет"
 
 
 def recognize_command(input_command: str):
     similarity_percent = 50
-    found_command = 'no_data'
+    result = False
 
     for command_id, command_texts in command_dic.items():
         for command_text in command_texts:
@@ -22,22 +31,41 @@ def recognize_command(input_command: str):
         print(f"Совпадение команды: {similarity}% | Ключ: {command_id}")
 
         if similarity >= similarity_percent:
-            found_command = command_id
-            process_command(command_id)
+            result = process_command(command_id)
 
-    return found_command
+    return result
+
+
+def recognize_name(name: str):
+    stat = False
+
+    for item in name_alias:
+        similarity = fuzzywuzzy.fuzz.ratio(item, name)
+
+        if similarity > 70:
+            stat = True
+            print(f"Name recognized: '{name}'")
+        else:
+            print(f"Name '{name}' not recognized, similarity {similarity}%")
+
+    return stat
 
 
 def process_command(key: str):
+    result = True
+
     match key:
-        case 'help':
+        case "help":
             f_help()
-        case 'about':
+        case "about":
             f_about()
-        case 'ctime':
+        case "ctime":
             f_ctime()
         case _:
-            print('Нет данных')
+            print(f"Unknown command key '{key}'")
+            result = False
+
+    return result
 
 
 def f_help():
@@ -52,10 +80,10 @@ def f_ctime():
     timezone = pytz.timezone("Europe/Moscow")
     now = datetime.datetime.now().astimezone(timezone)
     text = "Сейчас "
-    text += num2t4ru.num2text(int(now.hour)) + '.'
+    text += num2t4ru.num2text(int(now.hour)) + "."
 
     if now.minute < 10:
         text += "ноль "
 
-    text += num2t4ru.num2text(int(now.minute)) + '.'
+    text += num2t4ru.num2text(int(now.minute)) + "."
     speak.speak(text)
