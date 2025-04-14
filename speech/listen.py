@@ -1,4 +1,3 @@
-import os
 import sounddevice as sd
 import vosk
 import json
