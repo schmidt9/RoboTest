@@ -6,12 +6,12 @@ import datetime as dt
 cap = cv2.VideoCapture(0)
  
 # Check if camera opened successfully
-if (cap.isOpened()== False): 
+if (cap.isOpened() is False): 
   print("Error opening video stream or file")
  
 # Read until video is completed
 while(cap.isOpened()):
-    start = dt.datetime.utcnow()
+    start = dt.datetime.now(dt.UTC)
     # Capture frame-by-frame
     ret, img = cap.read()
     if not ret:
@@ -19,7 +19,7 @@ while(cap.isOpened()):
     
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-    duration = dt.datetime.utcnow() - start
+    duration = dt.datetime.now(dt.UTC) - start
     fps = round(10000000 / duration.microseconds)
  
     # draw process result and fps

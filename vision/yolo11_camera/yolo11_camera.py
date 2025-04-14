@@ -1,4 +1,3 @@
-import os
 import cv2
 import datetime as dt
 
@@ -168,7 +167,7 @@ if __name__ == '__main__':
     cap = cv2.VideoCapture(0)
      
     # Check if camera opened successfully
-    if (cap.isOpened()== False): 
+    if (cap.isOpened() is False): 
         print("Error opening video stream or file")
     
     model = RKNN_model_container(MODEL_PATH, "rk3566", None)
@@ -178,7 +177,7 @@ if __name__ == '__main__':
     # run test
     while(cap.isOpened()):
         
-        start = dt.datetime.utcnow()
+        start = dt.datetime.now(dt.UTC)
         # Capture frame-by-frame
         ret, img_bgr = cap.read()
         if not ret:
@@ -194,7 +193,7 @@ if __name__ == '__main__':
         outputs = model.run([img_model])
         boxes, classes, scores = post_process(outputs)
         
-        duration = dt.datetime.utcnow() - start
+        duration = dt.datetime.now(dt.UTC) - start
         fps = round(10000000 / duration.microseconds)
         
         cv2.putText(img_bgr, f'fps: {fps}',
