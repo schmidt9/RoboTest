@@ -13,6 +13,19 @@ logger.setLevel(logging.DEBUG)
 start_time: datetime.datetime = None
 measure_time: bool = False
 
+
+def start_measure():
+    global measure_time
+    measure_time = True
+    logger.log("Time measure started")
+
+
+def stop_measure():
+    global measure_time
+    measure_time = False
+    logger.log("Time measure stopped")
+
+
 def log(message: str):
     global start_time
 
@@ -26,6 +39,7 @@ def log(message: str):
         start_time = None
 
     logger.debug(message)
+
 
 if __name__ == "__main__":
     log("test log message")
