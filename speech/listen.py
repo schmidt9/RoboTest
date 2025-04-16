@@ -21,8 +21,15 @@ def q_callback(indata, frames, time, status):
 
 
 def voice_listen():
-    print("Start listening to voice")
+    # init voice for faster responces
+    speak.speak("Запускаюсь")
 
+    notifications.play_ready_notification()
+
+    speak.speak(f"Запуск завершен, можете обращаться ко мне как... {commands.name_alias[0]}")
+
+    print("Start listening to voice")
+    
     should_recognize_command = False
 
     with sd.RawInputStream(
@@ -32,22 +39,21 @@ def voice_listen():
         device=microphone_utils.microphone_device_id,
         dtype="int16",
     ):
-        rec = vosk.KaldiRecognizer(model, samplerate)
+        recognizer = vosk.KaldiRecognizer(model, samplerate)
 
         sd.sleep(-20)
 
         while True:
             data = q.get()
 
-            if rec.AcceptWaveform(data):
-                result = json.loads(rec.Result())["text"]
+            if recognizer.AcceptWaveform(data):
+                result = json.loads(recognizer.Result())["text"]
 
                 if result:
                     logger.log(f"Фраза целиком: {result}")
 
                     if commands.recognize_name(result):
                         should_recognize_command = True
-                        notifications.play_name_notification()
                         speak.speak("Я слушаю")
                     else:
                         if should_recognize_command:
@@ -59,7 +65,7 @@ def voice_listen():
                                 should_recognize_command = False
                                 speak.speak("Команда выполнена, жду следующую")
             else:
-                result = json.loads(rec.PartialResult())["partial"]
+                result = json.loads(recognizer.PartialResult())["partial"]
                 if result:
                     logger.log(f"Поток: {result}")
 
