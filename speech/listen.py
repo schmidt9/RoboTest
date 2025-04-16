@@ -7,6 +7,7 @@ import commands
 import microphone_utils
 import notifications
 import speak
+import logger
 
 root_path = Path(__file__).parent
 model_path = f"{root_path}/vosk/vosk-model-small-ru-0.22"
@@ -37,27 +38,30 @@ def voice_listen():
 
         while True:
             data = q.get()
-            if rec.AcceptWaveform(data):
-                res = json.loads(rec.Result())["text"]
-                if res:
-                    print(f"Фраза целиком: {res}")
 
-                    if commands.recognize_name(res):
+            if rec.AcceptWaveform(data):
+                result = json.loads(rec.Result())["text"]
+
+                if result:
+                    logger.log(f"Фраза целиком: {result}")
+
+                    if commands.recognize_name(result):
                         should_recognize_command = True
                         notifications.play_name_notification()
                         speak.speak("Я слушаю")
                     else:
                         if should_recognize_command:
-                            speak.speak(f"Выполняю команду... {res}")
+                            speak.speak(f"Выполняю команду... {result}")
 
-                            is_command_recognized = commands.recognize_command(res)
+                            is_command_recognized = commands.recognize_command(result)
 
                             if is_command_recognized:
                                 should_recognize_command = False
+                                speak.speak("Команда выполнена, жду следующую")
             else:
-                res = json.loads(rec.PartialResult())["partial"]
-                if res:
-                    print(f"Поток: {res}")
+                result = json.loads(rec.PartialResult())["partial"]
+                if result:
+                    logger.log(f"Поток: {result}")
 
 
 if __name__ == "__main__":

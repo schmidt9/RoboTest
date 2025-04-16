@@ -52,6 +52,7 @@ def speak(text: str):
 
 
 if __name__ == "__main__":
+    # first speak call can take significant time, but following calls should be much faster (~x5)
     for i in range(3):
         speak(f"Привет, это тестовый текст {i}")
         logger.log("===============================")
