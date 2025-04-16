@@ -24,6 +24,7 @@ model.to(device)
 
 
 def speak(text: str):
+    logger.measure_time= True
     logger.log(f"Starting TTS for text '{text}'")
 
     tmp_audio_path = f"{root_path}/tmp.wav"
@@ -47,6 +48,7 @@ def speak(text: str):
     microphone_utils.toggle_microphone(True)
 
     logger.log("Finished playing")
+    logger.measure_time = False
 
 
 if __name__ == "__main__":
