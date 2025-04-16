@@ -3,6 +3,7 @@ import torch
 from pathlib import Path
 import microphone_utils
 import player
+import logger
 
 root_path = Path(__file__).parent
 local_file_ru = f"{root_path}/silero/v4_ru.pt"
@@ -23,7 +24,7 @@ model.to(device)
 
 
 def speak(text: str):
-    print(f"Starting TTS for text '{text}'")
+    logger.log(f"Starting TTS for text '{text}'")
 
     tmp_audio_path = f"{root_path}/tmp.wav"
 
@@ -45,7 +46,7 @@ def speak(text: str):
 
     microphone_utils.toggle_microphone(True)
 
-    print("Finished playing")
+    logger.log("Finished playing")
 
 
 if __name__ == "__main__":
