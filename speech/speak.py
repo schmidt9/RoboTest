@@ -7,7 +7,7 @@ import player
 root_path = Path(__file__).parent
 local_file_ru = f"{root_path}/silero/v4_ru.pt"
 sample_rate = (
-    48000  # 8000, 24000, 48000 - частота дискретизации генерируемого аудиопотока
+    24000  # 8000, 24000, 48000 - частота дискретизации генерируемого аудиопотока
 )
 speaker = "kseniya"  # aidar, baya, kseniya, xenia, random - модель голоса
 put_accent = True
