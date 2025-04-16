@@ -52,4 +52,6 @@ def speak(text: str):
 
 
 if __name__ == "__main__":
-    speak("Привет, это тестовый текст")
+    for i in range(3):
+        speak(f"Привет, это тестовый текст {i}")
+        logger.log("===============================")
