@@ -8,12 +8,10 @@ import microphone_utils
 import notifications
 
 root_path = Path(__file__).parent
-model_path=f"{root_path}/vosk/vosk-model-small-ru-0.22"
-model = vosk.Model(model_path)                                  # Модель нейросети
-samplerate = 44100                                              # Частота дискретизации микрофона
-q = queue.Queue()                                               # Потоковый контейнер
-
-should_recognize_command = False
+model_path = f"{root_path}/vosk/vosk-model-small-ru-0.22"
+model = vosk.Model(model_path)  # Модель нейросети
+samplerate = 44100  # Частота дискретизации микрофона
+q = queue.Queue()  # Потоковый контейнер
 
 
 def q_callback(indata, frames, time, status):
@@ -23,11 +21,15 @@ def q_callback(indata, frames, time, status):
 def voice_listen():
     print("Start listening to voice")
 
-    with sd.RawInputStream(callback=q_callback, 
-                           channels=1, 
-                           samplerate=samplerate, 
-                           device=microphone_utils.microphone_device_id, 
-                           dtype='int16'):
+    should_recognize_command = False
+
+    with sd.RawInputStream(
+        callback=q_callback,
+        channels=1,
+        samplerate=samplerate,
+        device=microphone_utils.microphone_device_id,
+        dtype="int16",
+    ):
         rec = vosk.KaldiRecognizer(model, samplerate)
 
         sd.sleep(-20)
@@ -38,8 +40,6 @@ def voice_listen():
                 res = json.loads(rec.Result())["text"]
                 if res:
                     print(f"Фраза целиком: {res}")
-
-                    global should_recognize_command
 
                     if commands.recognize_name(res):
                         should_recognize_command = True

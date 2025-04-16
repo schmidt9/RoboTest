@@ -17,7 +17,7 @@ command_dic = {
     ),
 }
 
-name_alias = "привет"
+name_alias = ["привет"]
 
 
 def recognize_command(input_command: str):
@@ -28,25 +28,35 @@ def recognize_command(input_command: str):
         for command_text in command_texts:
             similarity = fuzzywuzzy.fuzz.ratio(input_command, command_text)
 
-        print(f"Совпадение команды: {similarity}% | Ключ: {command_id}")
+        print(f"Command recognized: {similarity}% | key: {command_id}")
 
         if similarity >= similarity_percent:
             result = process_command(command_id)
+
+            if result is False:
+                speak.speak(f"Для команды {input_command} не назначено действие")
 
     return result
 
 
 def recognize_name(name: str):
+    similarity_percent = 70
     stat = False
 
-    for item in name_alias:
-        similarity = fuzzywuzzy.fuzz.ratio(item, name)
+    print(f"Recognizing {name}:")
 
-        if similarity > 70:
+    for item in name_alias:
+        similarity = fuzzywuzzy.fuzz.ratio(name, item)
+
+        print(f"Sililarity to {item}: {similarity}%")
+
+        if similarity > similarity_percent:
             stat = True
             print(f"Name recognized: '{name}'")
-        else:
-            print(f"Name '{name}' not recognized, similarity {similarity}%")
+            break
+
+    if stat is False:
+        print(f"Name not recognized: '{name}'")
 
     return stat
 
@@ -87,3 +97,7 @@ def f_ctime():
 
     text += num2t4ru.num2text(int(now.minute)) + "."
     speak.speak(text)
+
+
+if __name__ == "__main__":
+    recognize_name("привет")

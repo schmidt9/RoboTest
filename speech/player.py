@@ -4,7 +4,8 @@ import subprocess
 
 def play_file(file_path: str):
     print("Start playing file")
-
+    
+    # not using sounddevice here because it freezes on play() for some reason
     subprocess.run([f"aplay --device=plughw:0,0 {file_path}"], shell=True)
 
     print("End playing file")
