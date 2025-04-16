@@ -6,6 +6,7 @@ from pathlib import Path
 import commands
 import microphone_utils
 import notifications
+import speak
 
 root_path = Path(__file__).parent
 model_path = f"{root_path}/vosk/vosk-model-small-ru-0.22"
@@ -44,8 +45,11 @@ def voice_listen():
                     if commands.recognize_name(res):
                         should_recognize_command = True
                         notifications.play_name_notification()
+                        speak.speak("Я слушаю")
                     else:
                         if should_recognize_command:
+                            speak.speak(f"Выполняю команду... {res}")
+
                             is_command_recognized = commands.recognize_command(res)
 
                             if is_command_recognized:
