@@ -1,6 +1,5 @@
 import datetime
 import fuzzywuzzy.fuzz
-import num2t4ru
 import speak
 import pytz
 
@@ -90,12 +89,12 @@ def f_ctime():
     timezone = pytz.timezone("Europe/Moscow")
     now = datetime.datetime.now().astimezone(timezone)
     text = "Сейчас "
-    text += num2t4ru.num2text(int(now.hour)) + "."
+    text += now.hour + " "
 
     if now.minute < 10:
         text += "ноль "
 
-    text += num2t4ru.num2text(int(now.minute)) + "."
+    text += now.minute
     speak.speak(text)
 
 
