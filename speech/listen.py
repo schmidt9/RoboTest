@@ -21,11 +21,6 @@ def q_callback(indata, frames, time, status):
 
 
 def voice_listen():
-    # init voice for faster responces
-    speak.speak("Запускаюсь")
-
-    notifications.play_ready_notification()
-
     speak.speak(f"Запуск завершен, можете обращаться ко мне как... {commands.name_alias[0]}")
 
     print("Start listening to voice")
@@ -54,6 +49,7 @@ def voice_listen():
 
                     if commands.recognize_name(result):
                         should_recognize_command = True
+                        notifications.play_ready_notification()
                         speak.speak("Я слушаю")
                     else:
                         if should_recognize_command:
@@ -64,6 +60,8 @@ def voice_listen():
                             if is_command_recognized:
                                 should_recognize_command = False
                                 speak.speak("Команда выполнена, жду следующую")
+                            else:
+                                speak.speak("Не понял команду, повторите еще раз")
             else:
                 result = json.loads(recognizer.PartialResult())["partial"]
                 if result:

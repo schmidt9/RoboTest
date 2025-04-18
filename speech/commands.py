@@ -89,12 +89,12 @@ def f_ctime():
     timezone = pytz.timezone("Europe/Moscow")
     now = datetime.datetime.now().astimezone(timezone)
     text = "Сейчас "
-    text += now.hour + " "
+    text += f"{now.hour} "
 
     if now.minute < 10:
         text += "ноль "
 
-    text += now.minute
+    text += f"{now.minute}"
     speak.speak(text)
 
 
