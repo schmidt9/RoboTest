@@ -1,20 +1,73 @@
 import os
-import threading
-import time
-import requests
-import player
+import subprocess
 from pathlib import Path
 import microphone_utils
 import logger
-from piper.piper_server import http_server
+import asyncio
 
 
 root_path = Path(__file__).parent
 
+llm_tts_process = None
+
 
 def start_server():
-    model_path = f"{root_path}/piper/model/ru_RU-dmitri-medium.onnx"
-    http_server.main(["--model", model_path])
+    piper_path = f"{root_path}/piper/piper_server_binary/piper"
+    piper_model_path = f"{root_path}/piper/model/ru_RU-dmitri-medium.onnx"
+
+    # using modified Piper version
+    # https://github.com/rhasspy/piper/pull/378
+    # https://github.com/createcandle/voco/blob/f806a5d19ee30ddb764d8b87d0215df4f39f3645/pkg/voco_adapter.py#L12317
+
+    tts_command = [
+        piper_path,
+        "--model",
+        piper_model_path,
+        "--server",
+        "--json-input",
+        "--output-raw",
+        "|",
+        "aplay"
+    ]
+
+    tts_command_part2 = [
+        "--device=plughw:0,0",
+        "-r",
+        "22050",
+        "-f",
+        "S16_LE",
+        "-t",
+        "raw",
+        "-"
+    ]
+
+    tts_command += tts_command_part2
+
+    tts_command_str = " ".join(tts_command)
+
+    logger.log(f"Starting Piper with command:\n{tts_command_str}")
+
+    my_env = os.environ.copy()
+
+    global llm_tts_process
+    llm_tts_process = subprocess.Popen(
+        args=tts_command_str,
+        env=my_env,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        universal_newlines=True,
+        text=True,
+        bufsize=1,
+        shell=True,
+    )
+
+    # os.set_blocking(llm_tts_process.stdout.fileno(), False)
+
+    if llm_tts_process.poll() is None:
+        logger.log("LLM TTS PROCESS STARTED SUCCESFULLY")
+    else:
+        logger.log("ERROR, LLM TTS PROCESS FAILED TO START")
 
 
 def speak(text: str):
@@ -30,45 +83,35 @@ def speak(text: str):
 
 
 def speak_text(text: str):
+    poll_code = llm_tts_process.poll()
+
+    if poll_code is not None:
+        logger.log(f"LLM TTS PROCESS TERMINATED WITH CODE {poll_code}")
+        return
+
     logger.log(f"Start speaking text '{text}'")
 
-    piper_url = "http://localhost:5000"
-    output_file_path = f"{root_path}/output.wav"
-    payload = {"text": text}
+    json_text = '{"text": "' + text.replace('"', '\\"') + '"}\n'
+    logger.log(json_text)
 
-    connection_tries = 60
+    llm_tts_process.stdin.write(json_text)
+    llm_tts_process.stdin.flush() # TODO: wait for audio finish
 
-    for i in range(connection_tries):
-        try:
-            request = requests.get(piper_url, params=payload, timeout=60)
-            status = request.status_code
-
-            if status == 200:
-                with open(output_file_path, "wb") as fd:
-                    for chunk in request.iter_content(128):
-                        fd.write(chunk)
-
-                player.play_file(output_file_path)
-
-                os.remove(output_file_path)
-
-                logger.log("End speaking text")
-
-                break
-            else:
-                logger.log(f"Enexpected status code {status}")
-                time.sleep(1)
-        except requests.exceptions.ConnectionError as ex:
-            logger.log(f"{ex} Trying to connect to piper server (try {i + 1})")
-            time.sleep(1)
-            pass
+    logger.log("End speaking text")
 
 
 if __name__ == "__main__":
-    thread = threading.Thread(target=start_server, name="Piper server")
-    thread.daemon = True
-    thread.start()
+    start_server()
 
-    for i in range(3):
+    for i in range(1):
         speak(f"Привет, это тестовый текст {i}")
         logger.log("===============================")
+
+    loop = asyncio.get_event_loop()
+
+    try:
+        loop.run_forever()
+    finally:
+        loop.close()
+
+    
