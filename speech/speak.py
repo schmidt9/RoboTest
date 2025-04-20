@@ -27,7 +27,7 @@ def start_server():
         "--json-input",
         "--output-raw",
         "|",
-        "aplay"
+        "aplay",
     ]
 
     tts_command_part2 = [
@@ -38,7 +38,7 @@ def start_server():
         "S16_LE",
         "-t",
         "raw",
-        "-"
+        "-",
     ]
 
     tts_command += tts_command_part2
@@ -65,45 +65,38 @@ def start_server():
     # os.set_blocking(llm_tts_process.stdout.fileno(), False)
 
     if llm_tts_process.poll() is None:
-        logger.log("LLM TTS PROCESS STARTED SUCCESFULLY")
+        logger.log("Piper process started successfully")
     else:
-        logger.log("ERROR, LLM TTS PROCESS FAILED TO START")
+        logger.log("Error, Piper process failed to start")
 
 
 def speak(text: str):
-    logger.start_measure()
-
     microphone_utils.toggle_microphone(False)
 
     speak_text(text)
 
     microphone_utils.toggle_microphone(True)
 
-    logger.stop_measure()
-
 
 def speak_text(text: str):
     poll_code = llm_tts_process.poll()
 
     if poll_code is not None:
-        logger.log(f"LLM TTS PROCESS TERMINATED WITH CODE {poll_code}")
+        logger.log(f"Piper process terminated with code {poll_code}")
         return
 
-    logger.log(f"Start speaking text '{text}'")
+    logger.log(f"Scheduled text for TTS '{text}'")
 
     json_text = '{"text": "' + text.replace('"', '\\"') + '"}\n'
-    logger.log(json_text)
 
     llm_tts_process.stdin.write(json_text)
-    llm_tts_process.stdin.flush() # TODO: wait for audio finish
-
-    logger.log("End speaking text")
+    llm_tts_process.stdin.flush()  # TODO: wait for audio finish
 
 
 if __name__ == "__main__":
     start_server()
 
-    for i in range(1):
+    for i in range(3):
         speak(f"Привет, это тестовый текст {i}")
         logger.log("===============================")
 
@@ -113,5 +106,3 @@ if __name__ == "__main__":
         loop.run_forever()
     finally:
         loop.close()
-
-    

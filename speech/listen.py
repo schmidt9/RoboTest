@@ -21,9 +21,11 @@ def q_callback(indata, frames, time, status):
 
 
 def voice_listen():
+    speak.start_server()
+
     speak.speak(f"Запуск завершен, можете обращаться ко мне как... {commands.name_alias[0]}")
 
-    print("Start listening to voice")
+    logger.log("Start listening to voice")
     
     should_recognize_command = False
 
