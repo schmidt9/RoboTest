@@ -1,14 +1,18 @@
+blinker==1.9.0
 certifi==2025.1.31
 cffi==1.17.1
 charset-normalizer==3.4.1
+click==8.1.8
 coloredlogs==15.0.1
 fast-histogram==0.14
 filelock==3.18.0
+Flask==3.1.0
 flatbuffers==25.2.10
 fsspec==2025.3.2
 fuzzywuzzy==0.18.0
 humanfriendly==10.0
 idna==3.10
+itsdangerous==2.2.0
 Jinja2==3.1.6
 Levenshtein==0.27.1
 MarkupSafe==3.0.2
@@ -20,6 +24,8 @@ onnxruntime==1.21.0
 opencv-python==4.11.0.86
 packaging==24.2
 pillow==11.2.1
+piper-tts==1.2.0
+piper_phonemize @ file:///home/orangepi/Documents/dev/RoboTest/speech/piper/dist/piper_phonemize-1.1.0-cp312-cp312-manylinux_2_28_aarch64.whl#sha256=6edafd5df40e58118881e1eee7d5838e16f0c4d79c8416d88851db9638c1f23a
 protobuf==4.25.4
 psutil==7.0.0
 pycparser==2.22
@@ -32,6 +38,7 @@ ruamel.yaml==0.18.10
 ruamel.yaml.clib==0.2.12
 scipy==1.15.2
 setuptools==78.1.0
+sounddevice==0.5.1
 srt==3.5.3
 sympy==1.13.1
 torch==2.2.0
@@ -40,3 +47,4 @@ typing_extensions==4.13.2
 urllib3==2.4.0
 vosk==0.3.45
 websockets==15.0.1
+Werkzeug==3.1.3
