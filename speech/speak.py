@@ -27,7 +27,7 @@ def start_server():
         "--json-input",
         "--output-raw",
         "|",
-        "aplay",
+        "aplay"
     ]
 
     tts_command_part2 = [
@@ -38,7 +38,7 @@ def start_server():
         "S16_LE",
         "-t",
         "raw",
-        "-",
+        "-"
     ]
 
     tts_command += tts_command_part2
@@ -62,7 +62,7 @@ def start_server():
         shell=True,
     )
 
-    # os.set_blocking(llm_tts_process.stdout.fileno(), False)
+    os.set_blocking(llm_tts_process.stdout.fileno(), False)
 
     if llm_tts_process.poll() is None:
         logger.log("Piper process started successfully")
