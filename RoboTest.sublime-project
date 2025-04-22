@@ -9,9 +9,9 @@
 	[
 		{
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
-			"name": "Anaconda Python Builder",
+			"name": "RoboTest Python Builder",
 			"selector": "source.python",
-			"shell_cmd": "\"python3\" -u \"$file\"",
+			"shell_cmd": "source ~/Documents/dev/RoboTest/bin/activate; \"python3\" -u \"$file\"",
 		}
-	],
+	]
 }
