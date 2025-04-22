@@ -1,10 +1,11 @@
 import cv2
 import datetime as dt
-
+import threading
 from pathlib import Path
 from coco_utils import COCO_test_helper
 from rknn_executor import RKNN_model_container
 import numpy as np
+import imutils
 
 
 OBJ_THRESH = 0.25
@@ -22,6 +23,10 @@ CLASSES = ("person", "bicycle", "car","motorbike ","aeroplane ","bus ","train","
 
 root_path = Path(__file__).parent.parent
 MODEL_PATH=f"{root_path}/models/yolo11n.rknn"
+
+outputFrame = None
+lock = threading.RLock()
+
 
 def filter_boxes(boxes, box_confidences, box_class_probs):
     """Filter boxes with object threshold.
@@ -160,14 +165,39 @@ def draw(image, boxes, scores, classes):
         cv2.putText(image, '{0} {1:.2f}'.format(CLASSES[cl], score),
                     (top, left - 6), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 
-if __name__ == '__main__':
+
+def generate():
+    # grab global references to the output frame and lock variables
+    global outputFrame, lock
+    # loop over frames from the output stream
+    while True:
+        # wait until the lock is acquired
+        with lock:
+            # check if the output frame is available, otherwise skip
+            # the iteration of the loop
+            if outputFrame is None:
+                continue
+            # encode the frame in JPEG format
+            (flag, encodedImage) = cv2.imencode(".jpg", outputFrame)
+            # ensure the frame was successfully encoded
+            if not flag:
+                continue
+        # yield the output frame in the byte format
+
+        yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + 
+            bytearray(encodedImage) + b'\r\n')
+
+
+def start_capture():
+
+    global outputFrame, lock
     
     # Create a VideoCapture object and read from input file
     # If the input is the camera, pass 0 instead of the video file name
-    cap = cv2.VideoCapture(0)
+    capture = cv2.VideoCapture(0)
      
     # Check if camera opened successfully
-    if (cap.isOpened() is False): 
+    if (capture.isOpened() is False): 
         print("Error opening video stream or file")
     
     model = RKNN_model_container(MODEL_PATH, "rk3566", None)
@@ -175,18 +205,16 @@ if __name__ == '__main__':
     co_helper = COCO_test_helper(enable_letter_box=True)
 
     # run test
-    while(cap.isOpened()):
+    while(capture.isOpened()):
         
         start = dt.datetime.now(dt.UTC)
         # Capture frame-by-frame
-        ret, img_bgr = cap.read()
+        ret, img_bgr = capture.read()
         if not ret:
             break
             
         img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
 
-        # Due to rga init with (0,0,0), we using pad_color (0,0,0) instead of (114, 114, 114)
-        pad_color = (0,0,0)
         img_bgr = co_helper.letter_box(im=img_bgr.copy(), new_shape=(IMG_SIZE[1], IMG_SIZE[0]), pad_color=(0,0,0))
         img_model = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
 
@@ -203,8 +231,9 @@ if __name__ == '__main__':
         
         if boxes is not None:
             draw(img_bgr, co_helper.get_real_box(boxes), scores, classes)
-            
-        cv2.imshow("full post process result", img_bgr)
+
+        with lock:
+            outputFrame = imutils.resize(img_bgr, width=400)
         
         # Press Q on keyboard to exit
         if cv2.waitKey(25) & 0xFF == ord('q'):
@@ -214,7 +243,4 @@ if __name__ == '__main__':
     model.release()
     
     # When everything done, release the video capture object
-    cap.release()
-     
-    # Closes all the frames
-    cv2.destroyAllWindows()
+    capture.release()
