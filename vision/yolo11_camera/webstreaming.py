@@ -36,7 +36,7 @@ def run(args):
 
 
 def run_local():
-	run(["--ip", "localhost", "--port", 8888])
+	run(["--ip", "0.0.0.0", "--port", 8888])
 
 
 if __name__ == '__main__':
