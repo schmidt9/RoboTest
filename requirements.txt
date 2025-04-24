@@ -20,13 +20,15 @@ mpmath==1.3.0
 networkx==3.4.2
 numpy==1.26.4
 onnx==1.16.1
+onnxoptimizer==0.3.8
 onnxruntime==1.21.0
 opencv-python==4.11.0.86
 packaging==24.2
 pillow==11.2.1
+piper-phonemize==1.1.0
 piper-tts==1.2.0
-piper_phonemize @ file:///home/orangepi/Documents/dev/RoboTest/speech/piper/dist/piper_phonemize-1.1.0-cp312-cp312-manylinux_2_28_aarch64.whl#sha256=6edafd5df40e58118881e1eee7d5838e16f0c4d79c8416d88851db9638c1f23a
-protobuf==4.25.4
+piper_phonemize_cross==1.2.1
+protobuf==3.20.3
 psutil==7.0.0
 pycparser==2.22
 python-Levenshtein==0.27.1
@@ -37,7 +39,6 @@ rknn-toolkit2==2.3.2
 ruamel.yaml==0.18.10
 ruamel.yaml.clib==0.2.12
 scipy==1.15.2
-setuptools==78.1.0
 sounddevice==0.5.1
 srt==3.5.3
 sympy==1.13.1

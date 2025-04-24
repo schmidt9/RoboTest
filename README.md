@@ -23,7 +23,8 @@ echo "Привет мир 16 50" | /home/orangepi/Documents/dev/RoboTest/speech/
 
 # Piper local server
 
-pip install speech/piper/dist/piper_phonemize-1.1.0-cp312-cp312-manylinux_2_28_aarch64.whl
+sudo apt install python3-dev
+pip install piper-phonemize-cross
 pip install piper-tts
 
 python3 -m speech.piper.piper_server.http_server --model speech/piper/model/ru_RU-dmitri-medium.onnx
@@ -34,9 +35,6 @@ curl -G --data-urlencode 'text=Привет мир 16 50' -o test.wav 'localhost
 
 https://github.com/rhasspy/piper/pull/378
 https://github.com/rhasspy/piper/issues/376
-
-
-see start_piper.sh script
 
 # helpers
 
