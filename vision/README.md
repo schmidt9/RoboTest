@@ -19,6 +19,8 @@ python yolo11.py --model_path /home/orangepi/sambashare/YoloTest/yolo11n.rknn --
 
 # Troubleshooting
 
+sudo apt-get install libgl1
+
 ## fix for "Invalid RKNN model version 6"
 replace/add librknnrt.so in /usr/lib (or /usr/lib64) with version from this directory (taken from https://github.com/airockchip/rknn-toolkit2/blob/master/rknpu2/runtime/Linux/librknn_api/aarch64/librknnrt.so)
 

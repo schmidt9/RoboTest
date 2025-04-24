@@ -24,28 +24,20 @@ def video_feed():
 		mimetype = "multipart/x-mixed-replace; boundary=frame")
 
 
-def run(args):
+def run(host: str, port: int):
 	# start a thread that will perform motion detection
 	t = threading.Thread(target=yolo11_camera.start_capture)
 	t.daemon = True
 	t.start()
 
 	# start the flask app
-	app.run(host=args["ip"], port=args["port"], debug=True,
+	app.run(host=host, port=port, debug=True,
 		threaded=True, use_reloader=False)
 
 
-def run_local():
-	run(["--ip", "0.0.0.0", "--port", 8888])
+def run_default():
+	run( "0.0.0.0", 8888)
 
 
 if __name__ == '__main__':
-	# construct the argument parser and parse command line arguments
-	ap = argparse.ArgumentParser()
-	ap.add_argument("-i", "--ip", type=str, required=True,
-		help="ip address of the device")
-	ap.add_argument("-o", "--port", type=int, required=True,
-		help="ephemeral port number of the server (1024 to 65535)")
-	args = vars(ap.parse_args())
-
-	run(args)
+	run_default()
