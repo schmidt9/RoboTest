@@ -1,0 +1,11 @@
+pane	0	0	1	:*	0	 orangepi@orangepi3b 	:/home/orangepi	1	bash	:
+pane	robotest	0	0	:-	0	 orangepi@orangepi3b 	:/home/orangepi	0	micro	:micro .tmux.conf
+pane	robotest	0	0	:-	1	 orangepi@orangepi3b 	:/home/orangepi/Documents/dev/RoboTest	1	bash	:
+pane	robotest	0	0	:-	2	mc [orangepi@orangepi3b]:~/Documents/dev/RoboTest/tmux/resurrect	:/home/orangepi/Documents/dev/RoboTest/tmux/resurrect	0	mc	:mc
+pane	robotest	1	0	:	0	 orangepi@orangepi3b 	:/home/orangepi/Documents/dev/RoboTest	1	bash	:
+pane	robotest	2	1	:*	0	 orangepi@orangepi3b 	:/home/orangepi/Documents/dev/RoboTest	1	lazygit	:lazygit -p /home/orangepi/Documents/dev/RoboTest
+window	0	0	:bash	1	:*	b8fe,189x42,0,0,1	:
+window	robotest	0	:win1	0	:-	bb76,189x42,0,0[189x19,0,0{94x19,0,0,2,94x19,95,0,3},189x22,0,20,4]	off
+window	robotest	1	:win2	0	:	b902,189x42,0,0,5	off
+window	robotest	2	:lazygit	1	:*	b903,189x42,0,0,6	:
+state	robotest	0
