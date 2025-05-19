@@ -119,10 +119,18 @@ void setup() {
 }
 
 void loop() {
-  if (Serial.available()) //if there is data in the serial buffer
+  int available = Serial.available();
+
+  if (available) //if there is data in the serial buffer
   {
-    ble_val = Serial.read();
-    Serial.println(ble_val);
+    if (available == 1) {
+      ble_val = Serial.read();
+      Serial.println(ble_val);
+    } else {
+      String stringData = Serial.readString(); // slow
+      Serial.println("Received: " + stringData);
+    }
+
     switch (ble_val) {
       case 'F': Car_front(); break; //the command to go front
 
@@ -178,7 +186,8 @@ void loop() {
 #if (USE_FAN_FUNCTION != 1)/****the function to not use the fan*******/
   //The following three signals are mainly used for cyclic printing
   if (ble_val == 'x') {
-    distance = checkdistance(); Serial.println(distance);
+    distance = checkdistance(); 
+    Serial.println(distance);
     delay(50);
   } else if (ble_val == 'w') {
     left_light = analogRead(light_L_Pin);
