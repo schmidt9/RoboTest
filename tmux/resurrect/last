@@ -1,11 +1,15 @@
 pane	0	0	1	:*	0	 orangepi@orangepi3b 	:/home/orangepi	1	bash	:
-pane	robotest	0	0	:-	0	 orangepi@orangepi3b 	:/home/orangepi	0	micro	:micro .tmux.conf
-pane	robotest	0	0	:-	1	 orangepi@orangepi3b 	:/home/orangepi/Documents/dev/RoboTest	1	bash	:
-pane	robotest	0	0	:-	2	mc [orangepi@orangepi3b]:~/Documents/dev/RoboTest/tmux/resurrect	:/home/orangepi/Documents/dev/RoboTest/tmux/resurrect	0	mc	:mc
-pane	robotest	1	0	:	0	 orangepi@orangepi3b 	:/home/orangepi/Documents/dev/RoboTest	1	bash	:
-pane	robotest	2	1	:*	0	 orangepi@orangepi3b 	:/home/orangepi/Documents/dev/RoboTest	1	lazygit	:lazygit -p /home/orangepi/Documents/dev/RoboTest
+pane	2	0	1	:*	0	 orangepi@orangepi3b 	:/home/orangepi/Documents/dev/RoboTest	1	bash	:
+pane	3	0	1	:*	0	 orangepi@orangepi3b 	:/home/orangepi/Documents/dev/RoboTest	1	bash	:
+pane	robotest	0	1	:*	0	 orangepi@orangepi3b 	:/home/orangepi	0	bash	:
+pane	robotest	0	1	:*	1	 orangepi@orangepi3b 	:/home/orangepi/Documents/dev/RoboTest/speech	0	vim	:vim listen.py
+pane	robotest	0	1	:*	2	mc [orangepi@orangepi3b]:~/Documents/dev/RoboTest/keyestudio	:/home/orangepi/Documents/dev/RoboTest/keyestudio	1	mc	:mc
+pane	robotest	1	0	:-	0	 orangepi@orangepi3b 	:/home/orangepi/Documents/dev/vim/src	1	bluetoothctl	:bluetoothctl
+pane	robotest	2	0	:	0	 orangepi@orangepi3b 	:/home/orangepi/Documents/dev/RoboTest	1	lazygit	:lazygit -p /home/orangepi/Documents/dev/RoboTest
 window	0	0	:bash	1	:*	b8fe,189x42,0,0,1	:
-window	robotest	0	:win1	0	:-	bb76,189x42,0,0[189x19,0,0{94x19,0,0,2,94x19,95,0,3},189x22,0,20,4]	off
-window	robotest	1	:win2	0	:	b902,189x42,0,0,5	off
-window	robotest	2	:lazygit	1	:*	b903,189x42,0,0,6	:
-state	robotest	0
+window	2	0	:bash	1	:*	b8ff,189x42,0,0,2	:
+window	3	0	:bash	1	:*	b900,189x42,0,0,3	:
+window	robotest	0	:win1	1	:*	844c,189x42,0,0[189x22,0,0{39x22,0,0,4,149x22,40,0,5},189x19,0,23,6]	off
+window	robotest	1	:win2	0	:-	b904,189x42,0,0,7	off
+window	robotest	2	:lazygit	0	:	b905,189x42,0,0,8	:
+state	robotest	3
