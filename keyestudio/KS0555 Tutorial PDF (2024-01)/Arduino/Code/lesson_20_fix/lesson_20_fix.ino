@@ -113,7 +113,7 @@ void setup() {
 
   pinMode(Trig, OUTPUT);
   pinMode(Echo, INPUT);
-  procedure(90);                 //set the angle of the servo to 90°
+  RotateServo(90);                 //set the angle of the servo to 90°
 #endif
 }
 
@@ -209,6 +209,7 @@ void loop() {
       case 0xFFC23D: Car_right(); break;  // Right - rotate to right
       case 0xFF02FD: Car_Stop(); break;   // OK - stop
       case 0xFF6897: Avoid(); break;      // 1 - avoid
+      case 0xFF9867: Dance(); break;      // 2 - dance
       default: break;
     }
     irrecv.resume();
@@ -232,8 +233,110 @@ float checkdistance() {
 
 
 //the function to control the servo
-void procedure(int myangle) {
+void RotateServo(int myangle) {
   myservo.write(myangle);
+}
+
+void Dance() {
+  RotateServo(90);
+
+  for (int i = 0; i < 4; i++) {
+    RotateServo(45);
+    delay(500);
+    RotateServo(135);
+    delay(500);
+    RotateServo(45);
+    delay(500);
+    RotateServo(135);
+    delay(500);
+
+    RotateServo(90);
+
+    Car_left();
+    delay(500);
+    Car_right();
+    delay(500);
+    Car_left();
+    delay(500);
+    Car_right();
+    delay(500);
+
+    Car_Stop();
+  }
+
+  for (int i = 0; i < 4; i++) {
+    RotateServo(45);
+    Car_left();
+    delay(500);
+
+    RotateServo(135);
+    Car_right();
+    delay(500);
+
+    RotateServo(45);
+    Car_left();
+    delay(500);
+
+    RotateServo(135);
+    Car_right();
+    delay(500);
+
+    RotateServo(90);
+
+    Car_left();
+    delay(500);
+    Car_right();
+    delay(500);
+    Car_left();
+    delay(500);
+    Car_right();
+    delay(500);
+
+    Car_Stop();
+  }
+
+  for (int i = 0; i < 4; i++) {
+    RotateServo(45);
+    Car_front();
+    delay(500);
+    Car_Stop();
+
+    RotateServo(135);
+    Car_back();
+    delay(500);
+    Car_Stop();
+
+    RotateServo(45);
+    Car_front();
+    delay(500);
+    Car_Stop();
+
+    RotateServo(135);
+    Car_back();
+    delay(500);
+    Car_Stop();
+
+    RotateServo(45);
+    Car_left();
+    delay(500);
+
+    RotateServo(135);
+    Car_right();
+    delay(500);
+
+    RotateServo(45);
+    Car_left();
+    delay(500);
+
+    RotateServo(135);
+    Car_right();
+    delay(500);
+
+    Car_Stop();
+  }
+
+  RotateServo(90);
+
 }
 
 /*****************obstacle avoidance******************/
@@ -244,17 +347,17 @@ void Avoid() {
     if (a < 20) {            //When the distance in front is less than 20cm
       Car_Stop();            //stop
       delay(500);            //delay in 500ms
-      procedure(180);        //servo turns left
+      RotateServo(180);      //servo turns left
       delay(500);            //delay in 500ms
       a1 = checkdistance();  //the left distance is set to a1
       delay(100);            //read value
 
-      procedure(0);          //servo turns right
+      RotateServo(0);        //servo turns right
       delay(500);            //delay in 500ms
       a2 = checkdistance();  ///the right distance is set to a2
       delay(100);            //read value
 
-      procedure(90);  //back to 90°
+      RotateServo(90);  //back to 90°
       delay(500);
       if (a1 > a2) {  //When the distance on the left is greater than the distance on the right
         Car_left();   //the robot turns left
