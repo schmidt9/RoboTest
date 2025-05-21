@@ -5,9 +5,10 @@
   http://www.keyestudio.com
 */
 #include <IRremote.h>
-#include <Servo.h>
+#include <PWMServo.h>
+#include <TimerFreeTone.h>
 IRrecv irrecv(3);  //
-Servo myservo;
+PWMServo myservo;
 decode_results results;
 long ir_rec;  //used to save the IR value
 
@@ -237,18 +238,29 @@ void RotateServo(int myangle) {
   myservo.write(myangle);
 }
 
+void MakeTone() {
+  TimerFreeTone(9, 300, 100);
+}
+
 void Dance() {
   RotateServo(90);
 
   for (int i = 0; i < 4; i++) {
     RotateServo(45);
-    delay(500);
+    MakeTone();
+    delay(400);
+
     RotateServo(135);
-    delay(500);
+    MakeTone();
+    delay(400);
+
     RotateServo(45);
-    delay(500);
+    MakeTone();
+    delay(400);
+
     RotateServo(135);
-    delay(500);
+    MakeTone();
+    delay(400);
 
     RotateServo(90);
 
@@ -266,20 +278,28 @@ void Dance() {
 
   for (int i = 0; i < 4; i++) {
     RotateServo(45);
+    MakeTone();
     Car_left();
-    delay(500);
+    delay(300);
+    MakeTone();
 
     RotateServo(135);
+    MakeTone();
     Car_right();
-    delay(500);
+    delay(300);
+    MakeTone();
 
     RotateServo(45);
+    MakeTone();
     Car_left();
-    delay(500);
+    delay(300);
+    MakeTone();
 
     RotateServo(135);
+    MakeTone();
     Car_right();
-    delay(500);
+    delay(300);
+    MakeTone();
 
     RotateServo(90);
 
@@ -297,40 +317,58 @@ void Dance() {
 
   for (int i = 0; i < 4; i++) {
     RotateServo(45);
+    MakeTone();
     Car_front();
-    delay(500);
+    delay(300);
+    MakeTone();
     Car_Stop();
 
     RotateServo(135);
+    MakeTone();
     Car_back();
-    delay(500);
+    delay(300);
+    MakeTone();
     Car_Stop();
 
     RotateServo(45);
+    MakeTone();
     Car_front();
-    delay(500);
+    delay(300);
+    MakeTone();
     Car_Stop();
 
     RotateServo(135);
+    MakeTone();
     Car_back();
-    delay(500);
+    delay(300);
+    MakeTone();
     Car_Stop();
 
     RotateServo(45);
+    MakeTone();
     Car_left();
-    delay(500);
+    delay(300);
+    MakeTone();
 
     RotateServo(135);
+    MakeTone();
     Car_right();
-    delay(500);
+    delay(300);
+    MakeTone();
 
     RotateServo(45);
+    MakeTone();
     Car_left();
-    delay(500);
+    delay(300);
+    MakeTone();
 
     RotateServo(135);
+    MakeTone();
     Car_right();
-    delay(500);
+    delay(200);
+    MakeTone();
+    delay(100);
+    MakeTone();
 
     Car_Stop();
   }
