@@ -247,21 +247,21 @@ void Dance() {
 
   // part 1
 
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < 2; i++) {
     RotateServo(45);
-    MakeTone(300, 100);
+    MakeTone(1300, 100);
     delay(400);
 
     RotateServo(135);
-    MakeTone(300, 100);
+    MakeTone(1300, 100);
     delay(400);
 
     RotateServo(45);
-    MakeTone(300, 100);
+    MakeTone(1300, 100);
     delay(400);
 
     RotateServo(135);
-    MakeTone(300, 100);
+    MakeTone(1300, 100);
     delay(400);
 
     RotateServo(90);
@@ -280,47 +280,47 @@ void Dance() {
 
   // part 2 
 
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < 2; i++) {
     RotateServo(45);
-    MakeTone(300, 100);
+    MakeTone(1300, 100);
     Car_left();
     delay(300);
-    MakeTone(600, 100);
+    MakeTone(1600, 100);
 
     RotateServo(135);
-    MakeTone(300, 100);
+    MakeTone(1300, 100);
     Car_right();
     delay(300);
-    MakeTone(600, 100);
+    MakeTone(1600, 100);
 
     RotateServo(45);
-    MakeTone(300, 100);
+    MakeTone(1300, 100);
     Car_left();
     delay(300);
-    MakeTone(300, 100);
+    MakeTone(1300, 100);
 
     RotateServo(135);
-    MakeTone(300, 100);
+    MakeTone(1300, 100);
     Car_right();
     delay(300);
-    MakeTone(600, 100);
+    MakeTone(1600, 100);
 
     RotateServo(90);
 
     Car_left();
-    MakeTone(450, 500);
+    MakeTone(1450, 500);
     delay(500);
 
     Car_right();
-    MakeTone(300, 500);
+    MakeTone(1300, 500);
     delay(500);
 
     Car_left();
-    MakeTone(600, 500);
+    MakeTone(1600, 500);
     delay(500);
 
     Car_right();
-    MakeTone(450, 500);
+    MakeTone(1450, 500);
     delay(500);
 
     Car_Stop();
@@ -328,58 +328,58 @@ void Dance() {
 
   // part 3
 
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < 2; i++) {
     RotateServo(45);
-    MakeTone(300, 100);
+    MakeTone(1300, 100);
     Car_front();
     delay(300);
-    MakeTone(150, 100);
+    MakeTone(1150, 100);
     Car_Stop();
 
     RotateServo(135);
-    MakeTone(300, 100);
+    MakeTone(1300, 100);
     Car_back();
     delay(300);
-    MakeTone(150, 100);
+    MakeTone(1150, 100);
     Car_Stop();
 
     RotateServo(45);
-    MakeTone(300, 100);
+    MakeTone(1300, 100);
     Car_front();
     delay(300);
-    MakeTone(150, 100);
+    MakeTone(1150, 100);
     Car_Stop();
 
     RotateServo(135);
-    MakeTone(300, 100);
+    MakeTone(1300, 100);
     Car_back();
     delay(300);
-    MakeTone(150, 100);
+    MakeTone(1150, 100);
     Car_Stop();
 
     RotateServo(45);
-    MakeTone(300, 100);
+    MakeTone(1300, 100);
     Car_left();
     delay(300);
-    MakeTone(150, 100);
+    MakeTone(1150, 100);
 
     RotateServo(135);
-    MakeTone(300, 100);
+    MakeTone(1300, 100);
     Car_right();
     delay(300);
-    MakeTone(150, 100);
+    MakeTone(1150, 100);
 
     RotateServo(45);
-    MakeTone(300, 100);
+    MakeTone(1300, 100);
     Car_left();
     delay(300);
-    MakeTone(300, 100);
+    MakeTone(1300, 100);
 
     RotateServo(135);
-    MakeTone(300, 100);
+    MakeTone(1300, 100);
     Car_right();
     delay(300);
-    MakeTone(600, 100);
+    MakeTone(1600, 100);
 
     Car_Stop();
   }
@@ -387,11 +387,12 @@ void Dance() {
   RotateServo(90);
 
   Car_right();
-  MakeTone(150, 250);
-  MakeTone(300, 250);
-  MakeTone(450, 250);
-  MakeTone(600, 250);
-  MakeTone(1200, 1000);
+  MakeTone(1150, 250);
+  MakeTone(1300, 250);
+  MakeTone(1450, 250);
+  MakeTone(1600, 250);
+  MakeTone(1450, 1000);
+  MakeTone(1300, 1000);
 
   Car_Stop();
 }
