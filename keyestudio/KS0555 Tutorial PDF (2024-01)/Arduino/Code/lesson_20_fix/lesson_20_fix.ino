@@ -7,6 +7,7 @@
 #include <IRremote.h>
 #include <PWMServo.h>
 #include <TimerFreeTone.h>
+#include <Wire.h>
 IRrecv irrecv(3);  //
 PWMServo myservo;
 decode_results results;
@@ -82,6 +83,10 @@ bool flag;  //flag invariable, used to enter and exit a mode
 
 void setup() {
   Serial.begin(9600);
+
+  Wire.begin(0x8);             
+  Wire.onReceive(receiveEvent);
+
   irrecv.enableIRIn();  //Initialize the library of the IR remote
 
   myservo.attach(servoPin);
@@ -214,6 +219,14 @@ void loop() {
       default: break;
     }
     irrecv.resume();
+  }
+}
+
+// Function that executes whenever data is received from master
+void receiveEvent(int howMany) {
+  while (Wire.available()) { // loop through all but the last
+    char c = Wire.read(); // receive byte as a character
+    Serial.println("RECEIVED " + c);
   }
 }
 
