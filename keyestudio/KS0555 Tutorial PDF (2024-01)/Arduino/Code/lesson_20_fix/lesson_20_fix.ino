@@ -81,8 +81,11 @@ int a2;
 
 bool flag;  //flag invariable, used to enter and exit a mode
 
+String buffer = "";
+bool received = false;
+
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   // Wire.begin(0x8);             
   // Wire.onReceive(receiveEvent);
@@ -124,17 +127,21 @@ void setup() {
 }
 
 void loop() {
-  int available = Serial.available();
+  while (Serial.available()) {
+    buffer += (char)Serial.read();
+    received = true;
+    delay(2);
+  }
 
-  if (available)  //if there is data in the serial buffer
+  if (received)  //if there is data in the serial buffer
   {
-    if (available == 1) {
-      ble_val = Serial.read();
-      Serial.println(ble_val);
-    } else {
-      String stringData = Serial.readStringUntil('\n');  // slow
-      Serial.println("Received: " + stringData);
+    if (buffer.length() > 0) {
+      ble_val = buffer[0];
     }
+
+    Serial.println("Received string: " + buffer);
+    buffer = "";
+    received = false;
 
     switch (ble_val) {
       case 'F': Car_front(); break;  //the command to go front
