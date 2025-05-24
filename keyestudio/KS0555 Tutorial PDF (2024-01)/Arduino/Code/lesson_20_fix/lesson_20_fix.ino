@@ -84,8 +84,8 @@ bool flag;  //flag invariable, used to enter and exit a mode
 void setup() {
   Serial.begin(9600);
 
-  Wire.begin(0x8);             
-  Wire.onReceive(receiveEvent);
+  // Wire.begin(0x8);             
+  // Wire.onReceive(receiveEvent);
 
   irrecv.enableIRIn();  //Initialize the library of the IR remote
 
@@ -132,7 +132,7 @@ void loop() {
       ble_val = Serial.read();
       Serial.println(ble_val);
     } else {
-      String stringData = Serial.readString();  // slow
+      String stringData = Serial.readStringUntil('\n');  // slow
       Serial.println("Received: " + stringData);
     }
 
