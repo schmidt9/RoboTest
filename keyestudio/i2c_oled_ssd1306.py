@@ -36,8 +36,8 @@ def handle_sigterm(signum, frame):
 
 
 def get_temp():
-    command = "curl --silent http://localhost:8888/dynamic.json | jq '(.soc_temp)|tonumber'"
-    temp = float(sp.getoutput(command))
+    command = "cat /sys/devices/virtual/thermal/thermal_zone0/temp"
+    temp = round(float(sp.getoutput(command)) / 1000, 1)
     return temp
 
 
@@ -180,7 +180,7 @@ font_full = ImageFont.truetype(str(Path(__file__).resolve().parent.joinpath("fon
 def main():
     while True:
         stats(device)
-        time.sleep(5)
+        time.sleep(2)
 
 
 if __name__ == "__main__":
