@@ -16,6 +16,7 @@ Based on https://github.com/rm-hull/luma.examples/blob/main/examples/sys_info.py
 import os
 import sys
 import time
+import signal
 from datetime import datetime
 
 if os.name != 'posix':
@@ -33,8 +34,9 @@ except ImportError:
     sys.exit()
 
 
-# TODO: custom font bitmaps for up/down arrows
-# TODO: Load histogram
+def handle_sigterm(signum, frame):
+    device.hide() # power off before shudown bacause screen stays on
+    os._exit(0) #force exit, avoids further signals
 
 
 def bytes2human(n):
@@ -110,6 +112,7 @@ def main():
 
 if __name__ == "__main__":
     try:
+        signal.signal(signal.SIGTERM, handle_sigterm)
         device = get_device()
         main()
     except KeyboardInterrupt:
