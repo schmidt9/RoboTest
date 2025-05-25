@@ -1,31 +1,27 @@
-# Copyright (c) 2014-2022 Richard Hull and contributors
-# See LICENSE.rst for details.
-# PYTHON_ARGCOMPLETE_OK
-
 """
-Display basic system information.
+Display detailed system information in graph format.
+It provides a display of CPU, memory, disk utilization, temperature, IP address and system Uptime.
 
 Needs psutil (+ dependencies) installed::
 
   $ sudo apt-get install python-dev
   $ sudo -H pip install psutil
 
-Based on https://github.com/rm-hull/luma.examples/blob/main/examples/sys_info.py
+https://github.com/rm-hull/luma.examples/blob/main/examples/sys_info_extended.py
 """
 
-import os
-import sys
 import time
 import signal
+from pathlib import Path
 from datetime import datetime
-
-if os.name != 'posix':
-    sys.exit(f'{os.name} platform is not supported')
-
-from luma.core.interface.serial import i2c
-from luma.oled.device import ssd1306
 from luma.core.render import canvas
-
+from PIL import ImageFont
+import subprocess as sp
+import socket
+from collections import OrderedDict
+from luma.oled.device import ssd1306
+from luma.core.interface.serial import i2c
+from luma.core.render import canvas
 
 try:
     import psutil
@@ -39,69 +35,146 @@ def handle_sigterm(signum, frame):
     os._exit(0) #force exit, avoids further signals
 
 
-def bytes2human(n):
-    """
-    >>> bytes2human(10000)
-    '9K'
-    >>> bytes2human(100001221)
-    '95M'
-    """
-    symbols = ('K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y')
-    prefix = {}
-    for i, s in enumerate(symbols):
-        prefix[s] = 1 << (i + 1) * 10
-    for s in reversed(symbols):
-        if n >= prefix[s]:
-            value = int(float(n) / prefix[s])
-            return '%s%s' % (value, s)
-    return f"{n}B"
+def get_temp():
+    command = "curl --silent http://localhost:8888/dynamic.json | jq '(.soc_temp)|tonumber'"
+    temp = float(sp.getoutput(command))
+    return temp
 
 
-def cpu_usage():
-    # load average, uptime
-    uptime = datetime.now() - datetime.fromtimestamp(psutil.boot_time())
-    av1, av2, av3 = os.getloadavg()
-    return "Ld:%.1f %.1f %.1f Up: %s" \
-        % (av1, av2, av3, str(uptime).split('.')[0])
+def get_cpu():
+    return psutil.cpu_percent()
 
 
-def mem_usage():
-    usage = psutil.virtual_memory()
-    return "Mem: %s %.0f%%" \
-        % (bytes2human(usage.used), 100 - usage.percent)
+def get_mem():
+    return psutil.virtual_memory().percent
 
 
-def disk_usage(dir):
-    usage = psutil.disk_usage(dir)
-    return "Disk:  %s %.0f%%" \
-        % (bytes2human(usage.used), usage.percent)
+def get_disk_usage():
+    usage = psutil.disk_usage("/")
+    return usage.used / usage.total * 100
 
 
-def network(iface):
-    stat = psutil.net_io_counters(pernic=True)[iface]
-    return "%s: Tx %s, Rx %s" % \
-           (iface, bytes2human(stat.bytes_sent), bytes2human(stat.bytes_recv))
+def get_uptime():
+    uptime = ("%s" % (datetime.now() - datetime.fromtimestamp(psutil.boot_time()))).split(".")[0]
+    return "UpTime: %s" % (uptime)
+
+
+def find_single_ipv4_address(addrs):
+    for addr in addrs:
+        if addr.family == socket.AddressFamily.AF_INET:  # IPv4
+            return addr.address
+
+
+def get_ipv4_address(interface_name=None):
+    if_addrs = psutil.net_if_addrs()
+
+    if isinstance(interface_name, str) and interface_name in if_addrs:
+        addrs = if_addrs.get(interface_name)
+        address = find_single_ipv4_address(addrs)
+        return address if isinstance(address, str) else ""
+    else:
+        if_stats = psutil.net_if_stats()
+        # remove loopback
+        if_stats_filtered = {key: if_stats[key] for key, stat in if_stats.items() if "loopback" not in stat.flags}
+        # sort interfaces by
+        # 1. Up/Down
+        # 2. Duplex mode (full: 2, half: 1, unknown: 0)
+        if_names_sorted = [stat[0] for stat in sorted(if_stats_filtered.items(), key=lambda x: (x[1].isup, x[1].duplex), reverse=True)]
+        if_addrs_sorted = OrderedDict((key, if_addrs[key]) for key in if_names_sorted if key in if_addrs)
+
+        for _, addrs in if_addrs_sorted.items():
+            address = find_single_ipv4_address(addrs)
+            if isinstance(address, str):
+                return address
+
+        return ""
+
+
+def get_ip(network_interface_name):
+    return "IP: %s" % (get_ipv4_address(network_interface_name))
+
+
+def format_percent(percent):
+    return "%5.1f" % (percent)
+
+
+def draw_text(draw, margin_x, line_num, text):
+    draw.text((margin_x, margin_y_line[line_num]), text, font=font_default, fill="white")
+
+
+def draw_bar(draw, line_num, percent):
+    top_left_y = margin_y_line[line_num] + bar_margin_top
+    draw.rectangle((margin_x_bar, top_left_y, margin_x_bar + bar_width, top_left_y + bar_height), outline="white")
+    draw.rectangle((margin_x_bar, top_left_y, margin_x_bar + bar_width * percent / 100, top_left_y + bar_height), fill="white")
+
+
+def draw_bar_full(draw, line_num):
+    top_left_y = margin_y_line[line_num] + bar_margin_top
+    draw.rectangle((margin_x_bar, top_left_y, margin_x_bar + bar_width_full, top_left_y + bar_height), fill="white")
+    draw.text((65, top_left_y - 2), "100 %", font=font_full, fill="black")
 
 
 def stats(device):
-       with canvas(device) as draw:
-        draw.text((0, 0), cpu_usage(), fill="white")
-        if device.height >= 32:
-            draw.text((0, 14), mem_usage(), fill="white")
+    with canvas(device) as draw:
+        temp = get_temp()
+        draw_text(draw, 0, 0, "Temp")
+        draw_text(draw, margin_x_figure, 0, "%s'C" % (format_percent(temp)))
 
-        if device.height >= 64:
-            draw.text((0, 26), disk_usage('/'), fill="white")
-            try:
-                draw.text((0, 38), network('wlan0'), fill="white")
-            except KeyError:
-                # no wifi enabled/available
-                pass
+        cpu = get_cpu()
+        draw_text(draw, 0, 1, "CPU")
+        if cpu < 100:
+            draw_text(draw, margin_x_figure, 1, "%s %%" % (format_percent(cpu)))
+            draw_bar(draw, 1, cpu)
+        else:
+            draw_bar_full(draw, 1)
+
+        mem = get_mem()
+        draw_text(draw, 0, 2, "Mem")
+        if mem < 100:
+            draw_text(draw, margin_x_figure, 2, "%s %%" % (format_percent(mem)))
+            draw_bar(draw, 2, mem)
+        else:
+            draw_bar_full(draw, 2)
+
+        disk = get_disk_usage()
+        draw_text(draw, 0, 3, "Disk")
+        if disk < 100:
+            draw_text(draw, margin_x_figure, 3, "%s %%" % (format_percent(disk)))
+            draw_bar(draw, 3, disk)
+        else:
+            draw_bar_full(draw, 3)
+
+        if datetime.now().second % (toggle_interval_seconds * 2) < toggle_interval_seconds:
+            draw_text(draw, 0, 4, get_uptime())
+        else:
+            draw_text(draw, 0, 4, get_ip(network_interface_name))
 
 
 def get_device():
     serial = i2c(port=2, address=0x3C)
     device = ssd1306(serial)
     return device
+
+
+font_size = 12
+font_size_full = 10
+margin_y_line = [0, 13, 25, 38, 51]
+margin_x_figure = 78
+margin_x_bar = 31
+bar_width = 52
+bar_width_full = 95
+bar_height = 8
+bar_margin_top = 3
+toggle_interval_seconds = 4
+
+
+# None : find suitable IPv4 address among all network interfaces
+# or specify the desired interface name as string.
+network_interface_name = None
+
+device = get_device()
+font_default = ImageFont.truetype(str(Path(__file__).resolve().parent.joinpath("fonts", "DejaVuSansMono.ttf")), font_size)
+font_full = ImageFont.truetype(str(Path(__file__).resolve().parent.joinpath("fonts", "DejaVuSansMono.ttf")), font_size_full)
 
 
 def main():
@@ -113,7 +186,6 @@ def main():
 if __name__ == "__main__":
     try:
         signal.signal(signal.SIGTERM, handle_sigterm)
-        device = get_device()
         main()
     except KeyboardInterrupt:
         pass
