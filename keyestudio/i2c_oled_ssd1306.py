@@ -22,6 +22,7 @@ from collections import OrderedDict
 from luma.oled.device import ssd1306
 from luma.core.interface.serial import i2c
 from luma.core.render import canvas
+import waveshare_ups_ina219
 
 try:
     import psutil
@@ -117,8 +118,13 @@ def draw_bar_full(draw, line_num):
 def stats(device):
     with canvas(device) as draw:
         temp = get_temp()
-        draw_text(draw, 0, 0, "Temp")
-        draw_text(draw, margin_x_figure, 0, "%s'C" % (format_percent(temp)))
+        draw_text(draw, 0, 0, "T")
+        draw_text(draw, margin_x_temp, 0, "%s°C" % (format_percent(temp)))
+
+        battery_data = waveshare_ups_ina219.read_data()
+        battery_percent = battery_data[3] 
+        draw_text(draw, margin_x_battery, 0, "B")
+        draw_text(draw, margin_x_figure, 0, "%s %%" % (format_percent(battery_percent)))
 
         cpu = get_cpu()
         draw_text(draw, 0, 1, "CPU")
@@ -161,6 +167,8 @@ font_size_full = 10
 margin_y_line = [0, 13, 25, 38, 51]
 margin_x_figure = 78
 margin_x_bar = 31
+margin_x_temp = 7
+margin_x_battery = 71
 bar_width = 52
 bar_width_full = 95
 bar_height = 8
