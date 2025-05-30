@@ -157,7 +157,7 @@ def stats(device):
 
 
 def get_device():
-    serial = i2c(port=2, address=0x3C)
+    serial = i2c(port=3, address=0x3C)
     device = ssd1306(serial)
     return device
 

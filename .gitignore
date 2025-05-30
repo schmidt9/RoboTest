@@ -184,3 +184,7 @@ fabric.properties
 
 
 *.sublime-workspace
+
+# vim
+
+*.swp
