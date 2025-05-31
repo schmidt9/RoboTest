@@ -8,13 +8,10 @@
 #include <PWMServo.h>
 #include <TimerFreeTone.h>
 #include <Wire.h>
-IRrecv irrecv(3);  //
+IRrecv irrecv(3);
 PWMServo myservo;
 decode_results results;
 long ir_rec;  //used to save the IR value
-
-/***********/
-#define USE_FAN_FUNCTION 0
 
 //Array, used to save data of images, can be calculated by yourself or gotten from modulus tool
 unsigned char start01[] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
@@ -45,16 +42,6 @@ byte speeds_L = 200;        //the initial speed of the left motor is 200
 byte speeds_R = 200;        //the initial speed of the right motor is 200
 String speeds_l, speeds_r;  //receive PWM characters and convert them into PWM value
 
-#if USE_FAN_FUNCTION /****use fan*******/
-int flame_L = A1;    //define the analog port of the left flame sensor to A1
-int flame_R = A2;    //define the analog port of the right flame sensor to A2
-int flame_valL, flame_valR;
-
-//the pin of 130 motor
-int INA = 12;
-int INB = 13;
-
-#else                   /****use the ultrasonic sensor*******/
 #define servoPin 10     //servo Pin
 #define light_L_Pin A1  //define the pin of the left photoresistor
 #define light_R_Pin A2  //define the pin of the right photoresistor
@@ -69,8 +56,6 @@ float distance;  //Store the distance values detected by ultrasonic for followin
 int a;
 int a1;
 int a2;
-
-#endif
 
 bool flag;  //flag invariable, used to enter and exit a mode
 
@@ -98,21 +83,12 @@ void setup() {
   matrix_display(clear);    //clear screen
   matrix_display(start01);  //show start
 
-#if USE_FAN_FUNCTION     /****use the fan*******/
-  pinMode(INA, OUTPUT);  //set INA to OUTPUT
-  pinMode(INB, OUTPUT);  //set INB to OUTPUT
-
-  //define inputs of the flame sensor
-  pinMode(flame_L, INPUT);
-  pinMode(flame_R, INPUT);
-#else /****use the ultrasonic sensor*******/
   pinMode(light_L_Pin, INPUT);
   pinMode(light_R_Pin, INPUT);
 
   pinMode(Trig, OUTPUT);
   pinMode(Echo, INPUT);
   RotateServo(90);               //set the angle of the servo to 90°
-#endif
 }
 
 void loop() {
@@ -143,20 +119,11 @@ void loop() {
 
       case 'S': Car_Stop(); break;  //stop
 
-#if USE_FAN_FUNCTION            /****use fan*******/
-      case 'j': Fire(); break;  //enable extinguishing fire mode
-
-      case 'c': fan_begin(); break;  //enable the fan
-
-      case 'd': fan_stop(); break;  //turn off the fan
-
-#else /****use the ultrasonic sensor*******/
       case 'g': Avoid(); break;  //enter obstacle avoidance mode
 
       case 'h': Follow(); break;  //enter light following mode
 
       case 'i': Light_following(); break;  //enter light following mode
-#endif
 
       case 'u':
         speeds_l = Serial.readStringUntil('#');
@@ -180,7 +147,6 @@ void loop() {
     }
   }
 
-#if (USE_FAN_FUNCTION != 1) /****the function to not use the fan*******/
   //The following three signals are mainly used for cyclic printing
   if (ble_val == 'x') {
     distance = checkdistance();
@@ -195,7 +161,6 @@ void loop() {
     Serial.println(right_light);
     delay(50);
   }
-#endif
 
   if (irrecv.decode(&results)) {  //Receive infrared remote control value
     ir_rec = results.value;
@@ -222,8 +187,6 @@ void receiveEvent(int howMany) {
   }
 }
 
-#if (USE_FAN_FUNCTION != 1) /****use the ultrasonic sensor*******/
-
 //Control the ultrasonic sensor
 float checkdistance() {
   float distance;
@@ -236,7 +199,6 @@ float checkdistance() {
   delay(10);
   return distance;
 }
-
 
 //the function to control the servo
 void RotateServo(int myangle) {
@@ -515,65 +477,6 @@ void Light_following() {
     }
   }
 }
-
-#else /****use the fan*******/
-/***************enable the fan*****************/
-void fan_begin() {
-  digitalWrite(INA, LOW);
-  digitalWrite(INB, HIGH);
-}
-
-/***************stop fanning*****************/
-void fan_stop() {
-  digitalWrite(INA, LOW);
-  digitalWrite(INB, LOW);
-}
-
-/***************extinguish fire****************/
-void Fire() {
-  flag = 0;
-  while (flag == 0) {
-    //Read the analog value of the flame sensor
-    flame_valL = analogRead(flame_L);
-    flame_valR = analogRead(flame_R);
-    if (flame_valL <= 700 || flame_valR <= 700) {
-      Car_Stop();
-      fan_begin();
-    } else {
-      fan_stop();
-      L_val = digitalRead(L_pin);  //Read the value of the left sensor
-      M_val = digitalRead(M_pin);  //Read the value of the left sensor
-      R_val = digitalRead(R_pin);  //Read the value of the right sensor
-
-      if (M_val == 1) {                  //the middle one detects black lines
-        if (L_val == 1 && R_val == 0) {  //If a black line is detected on the left, but not on the right, turn left
-          Car_left();
-        } else if (L_val == 0 && R_val == 1) {  //If a black line is detected on the right, not on the left, turn right
-          Car_right();
-        } else {  //go front
-          Car_front();
-        }
-      } else {                           //the middle one detects black lines
-        if (L_val == 1 && R_val == 0) {  //If a black line is detected on the left, but not on the right, turn left
-          Car_left();
-        } else if (L_val == 0 && R_val == 1) {  //If a black line is detected on the right, not on the left, turn right
-          Car_right();
-        } else {  //otherwise stop
-          Car_Stop();
-        }
-      }
-    }
-    if (Serial.available()) {
-      ble_val = Serial.read();
-      if (ble_val == 'S') {
-        flag = 1;
-        Car_Stop();
-      }
-    }
-  }
-}
-
-#endif
 
 /***************dot matrix******************/
 //this function is used for the display of dot matrix
