@@ -49,7 +49,7 @@ int left_light;
 int right_light;
 
 #define Trig 12
-#define Echo 13
+#define Echo 13  // built-in led
 float distance;  //Store the distance values detected by ultrasonic for following
 
 //Store the distance values detected by ultrasonic for obstacle avoidance
@@ -60,13 +60,15 @@ int a2;
 bool flag;  //flag invariable, used to enter and exit a mode
 
 String buffer = "";
+char i2c_response = '0';
 bool received = false;
 
 void setup() {
   Serial.begin(115200);
 
   Wire.begin(0x8);
-  Wire.onReceive(receiveEvent);
+  Wire.onReceive(onReceiveEvent);
+  Wire.onRequest(onRequestEvent);
 
   irrecv.enableIRIn();  //Initialize the library of the IR remote
 
@@ -88,7 +90,7 @@ void setup() {
 
   pinMode(Trig, OUTPUT);
   pinMode(Echo, INPUT);
-  RotateServo(90);               //set the angle of the servo to 90°
+  RotateServo(90);  //set the angle of the servo to 90°
 }
 
 void loop() {
@@ -180,11 +182,31 @@ void loop() {
 }
 
 // Function that executes whenever data is received from master
-void receiveEvent(int howMany) {
+void onReceiveEvent(int howMany) {
   while (Wire.available()) {  // loop through all but the last
     char c = Wire.read();     // receive byte as a character
-    Serial.println("RECEIVED " + c);
+    Serial.println("RECEIVED: " + String(c));
+    
+    i2c_response = c;
+
+    switch (c) {
+      case 'F': Car_front(); break;  //the command to go front
+
+      case 'B': Car_back(); break;  //the command to go back
+
+      case 'L': Car_left(); break;  //the command to turn left
+
+      case 'R': Car_right(); break;  //the command to turn right
+
+      case 'S': Car_Stop(); break;  //stop
+    }
   }
+}
+
+void onRequestEvent() {
+  Wire.print(i2c_response);
+
+  Serial.println("SENT ON REQUEST: " + String(i2c_response));
 }
 
 //Control the ultrasonic sensor
