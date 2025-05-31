@@ -8,13 +8,10 @@
 #include <PWMServo.h>
 #include <TimerFreeTone.h>
 #include <Wire.h>
-IRrecv irrecv(3);  //
+IRrecv irrecv(3);
 PWMServo myservo;
 decode_results results;
 long ir_rec;  //used to save the IR value
-
-/***********/
-#define USE_FAN_FUNCTION 0
 
 //Array, used to save data of images, can be calculated by yourself or gotten from modulus tool
 unsigned char start01[] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
@@ -33,8 +30,8 @@ unsigned char Heart[] = { 0x00, 0x00, 0x0C, 0x1E, 0x3F, 0x7F, 0xFE, 0xFC, 0xFE, 
 
 unsigned char clear[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-#define SCL_Pin A5  //set the pin of clock to A5
-#define SDA_Pin A4  //set the data pin to A4
+#define SCL_Pin 8   //set the pin of clock to D8
+#define SDA_Pin 11  //set the data pin to D11
 
 #define ML_Ctrl 4           //define the direction control pin of the left motor as 4
 #define ML_PWM 6            //define the PWM control pin of the left motor
@@ -45,23 +42,6 @@ byte speeds_L = 200;        //the initial speed of the left motor is 200
 byte speeds_R = 200;        //the initial speed of the right motor is 200
 String speeds_l, speeds_r;  //receive PWM characters and convert them into PWM value
 
-//wire up the line tracking sensor
-#define L_pin 11  //left
-#define M_pin 7   //middle
-#define R_pin 8   //right
-int L_val, M_val, R_val;
-
-
-#if USE_FAN_FUNCTION /****use fan*******/
-int flame_L = A1;    //define the analog port of the left flame sensor to A1
-int flame_R = A2;    //define the analog port of the right flame sensor to A2
-int flame_valL, flame_valR;
-
-//the pin of 130 motor
-int INA = 12;
-int INB = 13;
-
-#else                   /****use the ultrasonic sensor*******/
 #define servoPin 10     //servo Pin
 #define light_L_Pin A1  //define the pin of the left photoresistor
 #define light_R_Pin A2  //define the pin of the right photoresistor
@@ -69,7 +49,7 @@ int left_light;
 int right_light;
 
 #define Trig 12
-#define Echo 13
+#define Echo 13  // built-in led
 float distance;  //Store the distance values detected by ultrasonic for following
 
 //Store the distance values detected by ultrasonic for obstacle avoidance
@@ -77,18 +57,18 @@ int a;
 int a1;
 int a2;
 
-#endif
-
 bool flag;  //flag invariable, used to enter and exit a mode
 
 String buffer = "";
+char i2c_response = '0';
 bool received = false;
 
 void setup() {
   Serial.begin(115200);
 
-  // Wire.begin(0x8);             
-  // Wire.onReceive(receiveEvent);
+  Wire.begin(0x8);
+  Wire.onReceive(onReceiveEvent);
+  Wire.onRequest(onRequestEvent);
 
   irrecv.enableIRIn();  //Initialize the library of the IR remote
 
@@ -102,28 +82,15 @@ void setup() {
   pinMode(MR_Ctrl, OUTPUT);
   pinMode(MR_PWM, OUTPUT);
 
-  pinMode(L_pin, INPUT);  //define the pins of sensors to INPUT
-  pinMode(M_pin, INPUT);
-  pinMode(R_pin, INPUT);
-
   matrix_display(clear);    //clear screen
   matrix_display(start01);  //show start
 
-#if USE_FAN_FUNCTION     /****use the fan*******/
-  pinMode(INA, OUTPUT);  //set INA to OUTPUT
-  pinMode(INB, OUTPUT);  //set INB to OUTPUT
-
-  //define inputs of the flame sensor
-  pinMode(flame_L, INPUT);
-  pinMode(flame_R, INPUT);
-#else /****use the ultrasonic sensor*******/
   pinMode(light_L_Pin, INPUT);
   pinMode(light_R_Pin, INPUT);
 
   pinMode(Trig, OUTPUT);
   pinMode(Echo, INPUT);
-  RotateServo(90);                 //set the angle of the servo to 90°
-#endif
+  RotateServo(90);  //set the angle of the servo to 90°
 }
 
 void loop() {
@@ -154,24 +121,11 @@ void loop() {
 
       case 'S': Car_Stop(); break;  //stop
 
-      case 'e': Tracking(); break;  //enter the line tracking mode
-
-      case 'f': Confinement(); break;  //enter the confinement mode
-
-#if USE_FAN_FUNCTION            /****use fan*******/
-      case 'j': Fire(); break;  //enable extinguishing fire mode
-
-      case 'c': fan_begin(); break;  //enable the fan
-
-      case 'd': fan_stop(); break;  //turn off the fan
-
-#else /****use the ultrasonic sensor*******/
       case 'g': Avoid(); break;  //enter obstacle avoidance mode
 
       case 'h': Follow(); break;  //enter light following mode
 
       case 'i': Light_following(); break;  //enter light following mode
-#endif
 
       case 'u':
         speeds_l = Serial.readStringUntil('#');
@@ -195,7 +149,6 @@ void loop() {
     }
   }
 
-#if (USE_FAN_FUNCTION != 1) /****the function to not use the fan*******/
   //The following three signals are mainly used for cyclic printing
   if (ble_val == 'x') {
     distance = checkdistance();
@@ -210,7 +163,6 @@ void loop() {
     Serial.println(right_light);
     delay(50);
   }
-#endif
 
   if (irrecv.decode(&results)) {  //Receive infrared remote control value
     ir_rec = results.value;
@@ -230,14 +182,32 @@ void loop() {
 }
 
 // Function that executes whenever data is received from master
-void receiveEvent(int howMany) {
-  while (Wire.available()) { // loop through all but the last
-    char c = Wire.read(); // receive byte as a character
-    Serial.println("RECEIVED " + c);
+void onReceiveEvent(int howMany) {
+  while (Wire.available()) {  // loop through all but the last
+    char c = Wire.read();     // receive byte as a character
+    Serial.println("RECEIVED: " + String(c));
+    
+    i2c_response = c;
+
+    switch (c) {
+      case 'F': Car_front(); break;  //the command to go front
+
+      case 'B': Car_back(); break;  //the command to go back
+
+      case 'L': Car_left(); break;  //the command to turn left
+
+      case 'R': Car_right(); break;  //the command to turn right
+
+      case 'S': Car_Stop(); break;  //stop
+    }
   }
 }
 
-#if (USE_FAN_FUNCTION != 1) /****use the ultrasonic sensor*******/
+void onRequestEvent() {
+  Wire.print(i2c_response);
+
+  Serial.println("SENT ON REQUEST: " + String(i2c_response));
+}
 
 //Control the ultrasonic sensor
 float checkdistance() {
@@ -251,7 +221,6 @@ float checkdistance() {
   delay(10);
   return distance;
 }
-
 
 //the function to control the servo
 void RotateServo(int myangle) {
@@ -298,7 +267,7 @@ void Dance() {
     Car_Stop();
   }
 
-  // part 2 
+  // part 2
 
   for (int i = 0; i < 2; i++) {
     RotateServo(45);
@@ -461,11 +430,12 @@ void Avoid() {
       ir_rec = results.value;
       Serial.println(ir_rec, HEX);
       switch (ir_rec) {
-        case 0xFF02FD: { // OK - stop
-          flag = 1;
-          Car_Stop(); 
-          break;
-        }  
+        case 0xFF02FD:
+          {  // OK - stop
+            flag = 1;
+            Car_Stop();
+            break;
+          }
         default: break;
       }
       irrecv.resume();
@@ -529,124 +499,6 @@ void Light_following() {
     }
   }
 }
-
-#else /****use the fan*******/
-/***************enable the fan*****************/
-void fan_begin() {
-  digitalWrite(INA, LOW);
-  digitalWrite(INB, HIGH);
-}
-
-/***************stop fanning*****************/
-void fan_stop() {
-  digitalWrite(INA, LOW);
-  digitalWrite(INB, LOW);
-}
-
-/***************extinguish fire****************/
-void Fire() {
-  flag = 0;
-  while (flag == 0) {
-    //Read the analog value of the flame sensor
-    flame_valL = analogRead(flame_L);
-    flame_valR = analogRead(flame_R);
-    if (flame_valL <= 700 || flame_valR <= 700) {
-      Car_Stop();
-      fan_begin();
-    } else {
-      fan_stop();
-      L_val = digitalRead(L_pin);  //Read the value of the left sensor
-      M_val = digitalRead(M_pin);  //Read the value of the left sensor
-      R_val = digitalRead(R_pin);  //Read the value of the right sensor
-
-      if (M_val == 1) {                  //the middle one detects black lines
-        if (L_val == 1 && R_val == 0) {  //If a black line is detected on the left, but not on the right, turn left
-          Car_left();
-        } else if (L_val == 0 && R_val == 1) {  //If a black line is detected on the right, not on the left, turn right
-          Car_right();
-        } else {  //go front
-          Car_front();
-        }
-      } else {                           //the middle one detects black lines
-        if (L_val == 1 && R_val == 0) {  //If a black line is detected on the left, but not on the right, turn left
-          Car_left();
-        } else if (L_val == 0 && R_val == 1) {  //If a black line is detected on the right, not on the left, turn right
-          Car_right();
-        } else {  //otherwise stop
-          Car_Stop();
-        }
-      }
-    }
-    if (Serial.available()) {
-      ble_val = Serial.read();
-      if (ble_val == 'S') {
-        flag = 1;
-        Car_Stop();
-      }
-    }
-  }
-}
-
-#endif
-
-/***************line tracking*****************/
-void Tracking() {
-  flag = 0;
-  while (flag == 0) {
-    L_val = digitalRead(L_pin);        //Read the value of the left sensor
-    M_val = digitalRead(M_pin);        //Read the value of the intermediate sensor
-    R_val = digitalRead(R_pin);        //Read the value of the sensor on the right
-    if (M_val == 1) {                  //the middle one detects black lines
-      if (L_val == 1 && R_val == 0) {  //If a black line is detected on the left, but not on the right, turn left
-        Car_left();
-      } else if (L_val == 0 && R_val == 1) {  //If a black line is detected on the right, not on the left, turn right
-        Car_right();
-      } else {  //go front
-        Car_front();
-      }
-    } else {                           //the middle sensor doesn’t detect black lines
-      if (L_val == 1 && R_val == 0) {  //If a black line is detected on the left, but not on the right, turn left
-        Car_left();
-      } else if (L_val == 0 && R_val == 1) {  //If a black line is detected on the right, not on the left, turn right
-        Car_right();
-      } else {  //otherwise stop
-        Car_Stop();
-      }
-    }
-    if (Serial.available()) {
-      ble_val = Serial.read();
-      if (ble_val == 'S') {
-        flag = 1;
-        Car_Stop();
-      }
-    }
-  }
-}
-
-/***************Confinement*****************/
-void Confinement() {
-  flag = 0;
-  while (flag == 0) {
-    L_val = digitalRead(L_pin);                    //Read the value of the left sensor
-    M_val = digitalRead(M_pin);                    //Read the value of the intermediate sensor
-    R_val = digitalRead(R_pin);                    //Read the value of the sensor on the right
-    if (L_val == 0 && M_val == 0 && R_val == 0) {  //Go front when no black lines are detected      Car_front();
-    } else {                                       //
-      Car_back();
-      delay(700);
-      Car_left();
-      delay(800);
-    }
-    if (Serial.available()) {
-      ble_val = Serial.read();
-      if (ble_val == 'S') {
-        flag = 1;
-        Car_Stop();
-      }
-    }
-  }
-}
-
 
 /***************dot matrix******************/
 //this function is used for the display of dot matrix
