@@ -36,7 +36,9 @@ def run(host: str, port: int):
 
 
 def run_default():
-	run( "0.0.0.0", 8888)
+    port = 8888
+    print(f"Running on localhost:{port}")
+    run( "0.0.0.0", port)
 
 
 if __name__ == '__main__':

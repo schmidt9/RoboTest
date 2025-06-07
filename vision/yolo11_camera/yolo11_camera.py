@@ -198,7 +198,9 @@ def start_capture():
      
     # Check if camera opened successfully
     if (capture.isOpened() is False): 
-        print("Error opening video stream or file")
+        print("Error starting capture")
+    else:
+        print("Camera capture started")
     
     model = RKNN_model_container(MODEL_PATH, "rk3566", None)
     
