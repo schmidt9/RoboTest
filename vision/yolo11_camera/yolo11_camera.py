@@ -170,7 +170,6 @@ def generate_stub_image():
     img = np.zeros((IMG_SIZE[0], IMG_SIZE[1], 3), np.uint8) # Creates a black image
     font = cv2.FONT_HERSHEY_SIMPLEX
     cv2.putText(img, 'No signal', (50, 250), font, 2, (255, 255, 255), 2, cv2.LINE_AA) # White text
-    print("stub")
     
     return img
 
@@ -182,7 +181,6 @@ def generate():
     while True:
         # wait until the lock is acquired
         with lock:
-            print("generate_lock")
             # check if the output frame is available, otherwise skip
             # the iteration of the loop
             if outputFrame is None:
@@ -191,7 +189,6 @@ def generate():
             (flag, encodedImage) = cv2.imencode(".jpg", outputFrame)
             # ensure the frame was successfully encoded
             if not flag:
-                print("flag fail")
                 continue
         # yield the output frame in the byte format
 
