@@ -1,5 +1,6 @@
 import cv2
 import datetime as dt
+import time
 import threading
 from pathlib import Path
 from coco_utils import COCO_test_helper
@@ -199,59 +200,71 @@ def generate():
 def start_capture():
 
     global outputFrame, lock
-    
-    # Create a VideoCapture object and read from input file
-    # If the input is the camera, pass 0 instead of the video file name
-    capture = cv2.VideoCapture(0)
-     
-    # Check if camera opened successfully
-    if (capture.isOpened() is False): 
-        print("Error starting capture")
-    else:
-        print("Camera capture started")
-    
-    model = RKNN_model_container(MODEL_PATH, "rk3566", None)
-    
-    co_helper = COCO_test_helper(enable_letter_box=True)
+    capture = model = co_helper = None
 
-    # run test
-    while(capture.isOpened()):
+    def release():
+        if model is not None:
+            model.release()
+            model = None
         
-        start = dt.datetime.now(dt.UTC)
-        # Capture frame-by-frame
-        ret, img_bgr = capture.read()
-        if not ret:
-            break
+        outputFrame = None
+        
+        if capture is not None:
+            capture.release()
+            capture = None
+
+    # handle camera (hot) plug/unplug and start capture if available
+
+    while True:
+        time.sleep(1)
+
+        # Create a VideoCapture object and read from input file
+        # If the input is the camera, pass 0 instead of the video file name
+        capture = cv2.VideoCapture(0)
+
+        # Check if camera opened successfully
+        if (capture.isOpened() is False): 
+            continue
+        
+        model = RKNN_model_container(MODEL_PATH, "rk3566", None)
+        
+        co_helper = COCO_test_helper(enable_letter_box=True)
+
+        while(capture.isOpened()):
             
-        img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+            start = dt.datetime.now(dt.UTC)
+            # Capture frame-by-frame
+            ret, img_bgr = capture.read()
+            if not ret:
+                break
+                
+            img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
 
-        img_bgr = co_helper.letter_box(im=img_bgr.copy(), new_shape=(IMG_SIZE[1], IMG_SIZE[0]), pad_color=(0,0,0))
-        img_model = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+            img_bgr = co_helper.letter_box(im=img_bgr.copy(), new_shape=(IMG_SIZE[1], IMG_SIZE[0]), pad_color=(0,0,0))
+            img_model = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
 
-        outputs = model.run([img_model])
-        boxes, classes, scores = post_process(outputs)
-        
-        duration = dt.datetime.now(dt.UTC) - start
-        fps = round(10000000 / duration.microseconds)
-        
-        cv2.putText(img_bgr, f'fps: {fps}',
-            (20, 20),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            0.6, (0, 125, 125), 2)
-        
-        if boxes is not None:
-            draw(img_bgr, co_helper.get_real_box(boxes), scores, classes)
+            outputs = model.run([img_model])
+            boxes, classes, scores = post_process(outputs)
+            
+            duration = dt.datetime.now(dt.UTC) - start
+            fps = round(10000000 / duration.microseconds)
+            
+            cv2.putText(img_bgr, f'fps: {fps}',
+                (20, 20),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.6, (0, 125, 125), 2)
+            
+            if boxes is not None:
+                draw(img_bgr, co_helper.get_real_box(boxes), scores, classes)
 
-        with lock:
-            outputFrame = imutils.resize(img_bgr, width=400)
-        
-        # Press Q on keyboard to exit
-        if cv2.waitKey(25) & 0xFF == ord('q'):
-            break
+            with lock:
+                outputFrame = imutils.resize(img_bgr, width=400)
+            
+            # Press Q on keyboard to exit
+            if cv2.waitKey(25) & 0xFF == ord('q'):
+                break
 
-    # release
-    model.release()
+        release()
+
+    release()
     
-    # When everything done, release the video capture object
-    outputFrame = None
-    capture.release()
