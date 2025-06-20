@@ -12,6 +12,23 @@
   <script>
     function onButtonClick(direction) {
         alert(direction); // TODO: impl
+
+        const data = { 'direction': direction };
+
+        fetch('/get_direction', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
       }
     </script>
   </head>
@@ -20,7 +37,7 @@
     <img src="{{ url_for('video_feed') }}">
     <table>
       <tbody>
-        
+
         <tr>
           <td></td>
           <td><button onclick="onButtonClick('forward');">FORWARD</button></td>
