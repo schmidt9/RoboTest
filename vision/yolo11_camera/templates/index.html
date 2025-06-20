@@ -1,9 +1,43 @@
 <html>
   <head>
     <title>Pi Video Surveillance</title>
+
+    <style type="text/css">
+      td {
+        text-align: center;
+        padding: 10px;
+      }
+    </style>
+
+    <script>
+      function onButtonClick(direction) {
+        alert(direction); // TODO: impl
+      }
+    </script>
   </head>
   <body>
     <h1>Pi Video Surveillance</h1>
     <img src="{{ url_for('video_feed') }}">
+    <table>
+      <tbody>
+        <tr>
+        <td></td>
+        <td><button onclick="onButtonClick('forward');">FORWARD</button></td>
+        <td></td>
+      </tr>
+
+      <tr>
+        <td><button onclick="onButtonClick('left');">LEFT</button></td>
+        <td></td>
+        <td><button onclick="onButtonClick('right');">RIGHT</button></td>
+      </tr>
+
+      <tr>
+        <td></td>
+        <td><button onclick="onButtonClick('back');">BACK</button></td>
+        <td></td>
+      </tr>
+      </tbody>
+    </table>
   </body>
 </html>
