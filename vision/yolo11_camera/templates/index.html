@@ -10,53 +10,68 @@
   </style>
 
   <script>
-    function onButtonClick(direction) {
-        alert(direction); // TODO: impl
+    function sendCommand(command, endpoint) {
+      const data = { 'data': command };
 
-        const data = { 'direction': direction };
+      fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(response => {
+        console.log('Success:', response);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+    }
 
-        fetch('/get_direction', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
-      }
-    </script>
-  </head>
-  <body>
-    <h1>Pi Video Surveillance</h1>
-    <img src="{{ url_for('video_feed') }}">
-    <table>
-      <tbody>
+    function onDirectionButtonMouseDown(direction) {
+      sendCommand(direction, "/direction");
+    }
 
-        <tr>
-          <td></td>
-          <td><button onclick="onButtonClick('forward');">FORWARD</button></td>
-          <td></td>
-        </tr>
+    function onDirectionButtonMouseUp(direction) {
+      sendCommand(direction, "/direction");
+    }
 
-        <tr>
-          <td><button onclick="onButtonClick('left');">LEFT</button></td>
-          <td></td>
-          <td><button onclick="onButtonClick('right');">RIGHT</button></td>
-        </tr>
+    function onSendMessageButtonClick() {
+      var message = document.getElementById("message").value;
+      sendCommand(message, "/message");
+    }
+  </script>
+</head>
+<body>
+  <h1>Pi Video Surveillance</h1>
+  <img src="{{ url_for('video_feed') }}">
+  <table>
+    <tbody>
 
-        <tr>
-          <td></td>
-          <td><button onclick="onButtonClick('back');">BACK</button></td>
-          <td></td>
-        </tr>
+      <tr>
+        <td></td>
+        <td><button onmousedown="onDirectionButtonMouseDown('forward')" onmouseup="onDirectionButtonMouseUp('stop')">FORWARD</button></td>
+        <td></td>
+      </tr>
 
-      </tbody>
-    </table>
-  </body>
-  </html>
+      <tr>
+        <td><button onmousedown="onDirectionButtonMouseDown('left')" onmouseup="onDirectionButtonMouseUp('stop')">LEFT</button></td>
+        <td></td>
+        <td><button onmousedown="onDirectionButtonMouseDown('right')" onmouseup="onDirectionButtonMouseUp('stop')">RIGHT</button></td>
+      </tr>
+
+      <tr>
+        <td></td>
+        <td><button onmousedown="onDirectionButtonMouseDown('back')" onmouseup="onDirectionButtonMouseUp('stop')">BACK</button></td>
+        <td></td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <textarea id="message">test</textarea>
+  <button onclick="onSendMessageButtonClick()">Send message</button>
+
+</body>
+</html>

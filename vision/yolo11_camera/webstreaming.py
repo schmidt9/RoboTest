@@ -23,10 +23,18 @@ def video_feed():
 	return Response(yolo11_camera.generate(),
 		mimetype = "multipart/x-mixed-replace; boundary=frame")
 
-@app.route("/get_direction")
+@app.route("/direction")
 def get_direction():
 	data = request.get_json()
-    received_value = data.get('direction')
+    received_value = data.get('data')
+    # Process the data
+    response_data = {'message': f'Data received: {received_value}'}
+    return jsonify(response_data)
+
+@app.route("/message")
+def get_direction():
+	data = request.get_json()
+    received_value = data.get('data')
     # Process the data
     response_data = {'message': f'Data received: {received_value}'}
     return jsonify(response_data)
