@@ -1,9 +1,77 @@
 <html>
-  <head>
-    <title>Pi Video Surveillance</title>
-  </head>
-  <body>
-    <h1>Pi Video Surveillance</h1>
-    <img src="{{ url_for('video_feed') }}">
-  </body>
+<head>
+  <title>Pi Video Surveillance</title>
+
+  <style type="text/css">
+    td {
+      text-align: center;
+      padding: 10px;
+    }
+  </style>
+
+  <script>
+    function sendCommand(command, endpoint) {
+      const data = { 'data': command };
+
+      fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(response => {
+        console.log('Success:', response);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+    }
+
+    function onDirectionButtonMouseDown(direction) {
+      sendCommand(direction, "/direction");
+    }
+
+    function onDirectionButtonMouseUp(direction) {
+      sendCommand(direction, "/direction");
+    }
+
+    function onSendMessageButtonClick() {
+      var message = document.getElementById("message").value;
+      sendCommand(message, "/message");
+    }
+  </script>
+</head>
+<body>
+  <h1>Pi Video Surveillance</h1>
+  <img src="{{ url_for('video_feed') }}">
+  <table>
+    <tbody>
+
+      <tr>
+        <td></td>
+        <td><button onmousedown="onDirectionButtonMouseDown('forward')" onmouseup="onDirectionButtonMouseUp('stop')">FORWARD</button></td>
+        <td></td>
+      </tr>
+
+      <tr>
+        <td><button onmousedown="onDirectionButtonMouseDown('left')" onmouseup="onDirectionButtonMouseUp('stop')">LEFT</button></td>
+        <td></td>
+        <td><button onmousedown="onDirectionButtonMouseDown('right')" onmouseup="onDirectionButtonMouseUp('stop')">RIGHT</button></td>
+      </tr>
+
+      <tr>
+        <td></td>
+        <td><button onmousedown="onDirectionButtonMouseDown('back')" onmouseup="onDirectionButtonMouseUp('stop')">BACK</button></td>
+        <td></td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <textarea id="message">test</textarea>
+  <button onclick="onSendMessageButtonClick()">Send message</button>
+
+</body>
 </html>

@@ -8,10 +8,8 @@
 #include <PWMServo.h>
 #include <TimerFreeTone.h>
 #include <Wire.h>
-IRrecv irrecv(3);
+
 PWMServo myservo;
-decode_results results;
-long ir_rec;  //used to save the IR value
 
 //Array, used to save data of images, can be calculated by yourself or gotten from modulus tool
 unsigned char start01[] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
@@ -51,6 +49,22 @@ int right_light;
 #define Trig 12
 #define Echo 13  // built-in led
 float distance;  //Store the distance values detected by ultrasonic for following
+
+// ----------- IR Remote ------------
+#define IR_HOLD_DOWN_CODE 0xFFFFFFFF
+#define IR_UP_CODE 0xFF629D
+#define IR_DOWN_CODE 0xFFA857
+#define IR_LEFT_CODE 0xFF22DD
+#define IR_RIGHT_CODE 0xFFC23D
+#define IR_OK_CODE 0xFF02FD
+#define IR_1_CODE 0xFF6897
+#define IR_2_CODE 0xFF9867
+// IR Remote repeats button hold down signal about every 100 ms (+ some tolerance)
+#define IR_TIMEOUT_MILLIS 200
+
+IRrecv irrecv(3);
+decode_results results;
+unsigned long last_timestamp = 0;
 
 //Store the distance values detected by ultrasonic for obstacle avoidance
 int a;
@@ -164,21 +178,65 @@ void loop() {
     delay(50);
   }
 
+  handleIRSignal();
+}
+
+void handleIRSignal() {
   if (irrecv.decode(&results)) {  //Receive infrared remote control value
-    ir_rec = results.value;
+    unsigned long ir_rec = results.value;
     Serial.println(ir_rec, HEX);
+
     switch (ir_rec) {
-      case 0xFF629D: Car_front(); break;  // Up - go front
-      case 0xFFA857: Car_back(); break;   // Down - go back
-      case 0xFF22DD: Car_left(); break;   // Left - rotate to left
-      case 0xFFC23D: Car_right(); break;  // Right - rotate to right
-      case 0xFF02FD: Car_Stop(); break;   // OK - stop
-      case 0xFF6897: Avoid(); break;      // 1 - avoid
-      case 0xFF9867: Dance(); break;      // 2 - dance
+      case IR_HOLD_DOWN_CODE:
+        {
+          Serial.println("Hold down");
+          last_timestamp = millis();
+          break;
+        }
+      case IR_UP_CODE:
+        {
+          Serial.println("Moving forward");
+          last_timestamp = millis();
+          Car_front();
+          break;
+        }
+      case IR_DOWN_CODE:
+        {
+          Serial.println("Moving back");
+          last_timestamp = millis();
+          Car_back();
+          break;
+        }
+      case IR_LEFT_CODE:
+        {
+          Serial.println("Moving left");
+          last_timestamp = millis();
+          Car_left();
+          break;
+        }
+      case IR_RIGHT_CODE:
+        {
+          Serial.println("Moving right");
+          last_timestamp = millis();
+          Car_right();
+          break;
+        }
+      case IR_1_CODE: Avoid(); break;
+      case IR_2_CODE: Dance(); break;
       default: break;
     }
+
     irrecv.resume();
   }
+
+  if (isIRHoldReleased()) {
+    Car_Stop();
+  }
+}
+
+bool isIRHoldReleased() {
+  long delta = millis() - last_timestamp;
+  return delta > IR_TIMEOUT_MILLIS;
 }
 
 // Function that executes whenever data is received from master
@@ -186,7 +244,7 @@ void onReceiveEvent(int howMany) {
   while (Wire.available()) {  // loop through all but the last
     char c = Wire.read();     // receive byte as a character
     Serial.println("RECEIVED: " + String(c));
-    
+
     i2c_response = c;
 
     switch (c) {
@@ -427,11 +485,11 @@ void Avoid() {
     }
 
     if (irrecv.decode(&results)) {  //Receive infrared remote control value
-      ir_rec = results.value;
+      unsigned long ir_rec = results.value;
       Serial.println(ir_rec, HEX);
       switch (ir_rec) {
-        case 0xFF02FD:
-          {  // OK - stop
+        case IR_OK_CODE:
+          {
             flag = 1;
             Car_Stop();
             break;

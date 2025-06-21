@@ -1,7 +1,7 @@
 # https://pyimagesearch.com/2019/09/02/opencv-stream-video-to-web-browser-html-page/
 
 from flask import Response
-from flask import Flask
+from flask import Flask, request, jsonify
 from flask import render_template
 import threading
 import argparse
@@ -22,6 +22,22 @@ def video_feed():
 	# type (mime type)
 	return Response(yolo11_camera.generate(),
 		mimetype = "multipart/x-mixed-replace; boundary=frame")
+
+@app.route("/direction")
+def get_direction():
+	data = request.get_json()
+    received_value = data.get('data')
+    # Process the data
+    response_data = {'message': f'Data received: {received_value}'}
+    return jsonify(response_data)
+
+@app.route("/message")
+def get_direction():
+	data = request.get_json()
+    received_value = data.get('data')
+    # Process the data
+    response_data = {'message': f'Data received: {received_value}'}
+    return jsonify(response_data)
 
 
 def run(host: str, port: int):
