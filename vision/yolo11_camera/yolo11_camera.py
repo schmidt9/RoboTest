@@ -27,6 +27,9 @@ MODEL_PATH=f"{root_path}/models/yolo11n.rknn"
 
 outputFrame = None
 lock = threading.RLock()
+capture = None
+model = None
+co_helper = None
 
 
 def filter_boxes(boxes, box_confidences, box_class_probs):
@@ -199,23 +202,28 @@ def generate():
 
 def start_capture():
 
-    global outputFrame, lock
-    capture = model = co_helper = None
+    global outputFrame, lock, capture, model, co_helper
 
     def release():
         if model is not None:
+            print("Releasing RKNN model")
             model.release()
             model = None
         
         outputFrame = None
         
         if capture is not None:
+            print("Releasing capture")
             capture.release()
             capture = None
 
     # handle camera (hot) plug/unplug and start capture if available
 
+    print("Starting capture")
+
     while True:
+        print("Waiting for camera connection...")
+
         time.sleep(1)
 
         # Create a VideoCapture object and read from input file
@@ -224,7 +232,10 @@ def start_capture():
 
         # Check if camera opened successfully
         if (capture.isOpened() is False): 
+            print("Unable to open camera connection")
             continue
+
+        print("Initializing RKNN model")
         
         model = RKNN_model_container(MODEL_PATH, "rk3566", None)
         
@@ -263,6 +274,8 @@ def start_capture():
             # Press Q on keyboard to exit
             if cv2.waitKey(25) & 0xFF == ord('q'):
                 break
+
+        print("Camera connection lost")
 
         release()
 
