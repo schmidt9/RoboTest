@@ -6,9 +6,11 @@ from flask import render_template
 import threading
 import argparse
 import yolo11_camera
-import robotest.speech.speak 
+import robotest.speech.speak as speak 
 
 app = Flask(__name__)
+
+speak.start_server()
 
 @app.route("/")
 def index():
@@ -37,6 +39,9 @@ def direction():
 def message():
     data = request.get_json()
     received_value = data.get('data')
+
+    speak.speak(received_value)
+
     # Process the data
     response_data = {'message': f'Data received: {received_value}'}
     return jsonify(response_data)
