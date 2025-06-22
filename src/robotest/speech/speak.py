@@ -4,6 +4,7 @@ from pathlib import Path
 from robotest.speech import microphone_utils
 from robotest.speech import logger
 import asyncio
+import time
 
 
 root_path = Path(__file__).parent
@@ -11,7 +12,7 @@ root_path = Path(__file__).parent
 llm_tts_process = None
 
 
-def start_server():
+def start_server(blocking=False):
     piper_path = f"{root_path}/piper/piper_server_binary/piper"
     piper_model_path = f"{root_path}/piper/model/ru_RU-dmitri-medium.onnx"
 
@@ -69,6 +70,16 @@ def start_server():
     else:
         logger.log("Error, Piper process failed to start")
 
+    if blocking:
+        loop = asyncio.get_event_loop()
+
+        try:
+            loop.run_forever()
+        finally:
+            loop.close()
+
+def start_server_blocking():
+    start_server(blocking=True)
 
 def speak(text: str):
     microphone_utils.toggle_microphone(False)
@@ -91,12 +102,13 @@ def speak_text(text: str):
 
     llm_tts_process.stdin.write(json_text)
     llm_tts_process.stdin.flush()  # TODO: wait for audio finish
-
+    
+    time.sleep(2)
 
 if __name__ == "__main__":
     start_server()
 
-    for i in range(2):
+    for i in range(1):
         speak(f"Привет, это тестовый текст {i}")
         logger.log("===============================")
 

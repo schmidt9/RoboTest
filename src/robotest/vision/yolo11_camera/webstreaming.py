@@ -10,8 +10,6 @@ import robotest.speech.speak as speak
 
 app = Flask(__name__)
 
-speak.start_server()
-
 @app.route("/")
 def index():
 	# return the rendered template
@@ -48,14 +46,14 @@ def message():
 
 
 def run(host: str, port: int):
-	# start a thread that will perform motion detection
-	t = threading.Thread(target=yolo11_camera.start_capture)
-	t.daemon = True
-	t.start()
+    # start a thread that will perform motion detection
+    t = threading.Thread(target=yolo11_camera.start_capture)
+    t.daemon = True
+    t.start()
 
-	# start the flask app
-	app.run(host=host, port=port, debug=True,
-		threaded=True, use_reloader=False)
+    speak.start_server()
+    
+    app.run(host=host, port=port, debug=True,threaded=True, use_reloader=False)
 
 
 def run_default():
@@ -65,4 +63,4 @@ def run_default():
 
 
 if __name__ == '__main__':
-	run_default()
+    run_default()
