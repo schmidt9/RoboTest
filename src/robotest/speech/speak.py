@@ -1,8 +1,8 @@
 import os
 import subprocess
 from pathlib import Path
-from . import microphone_utils
-from . import logger
+from robotest.speech import microphone_utils
+from robotest.speech import logger
 import asyncio
 
 
@@ -96,7 +96,7 @@ def speak_text(text: str):
 if __name__ == "__main__":
     start_server()
 
-    for i in range(3):
+    for i in range(2):
         speak(f"Привет, это тестовый текст {i}")
         logger.log("===============================")
 
