@@ -6,9 +6,9 @@ from flask import render_template
 import threading
 import argparse
 import yolo11_camera
+import robotest.speech.speak 
 
 app = Flask(__name__)
-
 
 @app.route("/")
 def index():

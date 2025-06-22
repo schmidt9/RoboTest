@@ -1,5 +1,5 @@
 import os
-import logger
+from . import logger
 
 microphone_device_id = 2                                       # Индекс аудиоустройства (микрофон)
 

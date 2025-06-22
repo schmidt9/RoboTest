@@ -1,8 +1,8 @@
 import os
 import subprocess
 from pathlib import Path
-import microphone_utils
-import logger
+from . import microphone_utils
+from . import logger
 import asyncio
 
 
