@@ -34,7 +34,7 @@ def direction():
 
 
 @app.route("/message")
-def direction():
+def message():
     data = request.get_json()
     received_value = data.get('data')
     # Process the data
