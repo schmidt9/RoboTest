@@ -24,7 +24,7 @@ def video_feed():
 		mimetype = "multipart/x-mixed-replace; boundary=frame")
 
 
-@app.route("/direction")
+@app.route("/direction", methods=['GET', 'POST'])
 def direction():
     data = request.get_json()
     received_value = data.get('data')
@@ -33,7 +33,7 @@ def direction():
     return jsonify(response_data)
 
 
-@app.route("/message")
+@app.route("/message", methods=['GET', 'POST'])
 def message():
     data = request.get_json()
     received_value = data.get('data')
