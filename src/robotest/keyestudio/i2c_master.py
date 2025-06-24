@@ -5,10 +5,6 @@ from smbus3 import SMBus
 addr = 0x8 # bus address
 bus = SMBus(2) # indicates /dev/i2c-2
 
-numb = 1
-
-print ("Enter command")
-
 
 def send_command(command: int):
     bus.write_byte(addr, command)
@@ -17,9 +13,12 @@ def send_command(command: int):
     print(f'Byte read: {byte_value} (string value: {str_byte_value})')
 
 
-while numb == 1:
-    command = input('>>>>   ').encode('utf-8')
-    send_command(command[0])
+if __name__ == '__main__':
+    print ("Enter command")
+
+    while True:
+        command = input('>>>>   ').encode('utf-8')
+        send_command(command[0])
 
 
 
