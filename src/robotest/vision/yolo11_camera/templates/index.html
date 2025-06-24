@@ -5,8 +5,13 @@
 
   <style type="text/css">
     td {
-      text-align: center;
-      padding: 10px;
+	    text-align: center;
+	    padding: 10px;
+    }
+    
+    .direction-button {
+	    width: 50;
+	    height: 50;
     }
   </style>
 
@@ -52,19 +57,19 @@
 
       <tr>
         <td></td>
-        <td><button onmousedown="onDirectionButtonMouseDown('forward')" onmouseup="onDirectionButtonMouseUp('stop')">FORWARD</button></td>
+        <td><button class=".direction-button" onmousedown="onDirectionButtonMouseDown('forward')" onmouseup="onDirectionButtonMouseUp('stop')">FORWARD</button></td>
         <td></td>
       </tr>
 
       <tr>
-        <td><button onmousedown="onDirectionButtonMouseDown('left')" onmouseup="onDirectionButtonMouseUp('stop')">LEFT</button></td>
+        <td><button class=".direction-button" onmousedown="onDirectionButtonMouseDown('left')" onmouseup="onDirectionButtonMouseUp('stop')">LEFT</button></td>
         <td></td>
-        <td><button onmousedown="onDirectionButtonMouseDown('right')" onmouseup="onDirectionButtonMouseUp('stop')">RIGHT</button></td>
+        <td><button class=".direction-button" onmousedown="onDirectionButtonMouseDown('right')" onmouseup="onDirectionButtonMouseUp('stop')">RIGHT</button></td>
       </tr>
 
       <tr>
         <td></td>
-        <td><button onmousedown="onDirectionButtonMouseDown('back')" onmouseup="onDirectionButtonMouseUp('stop')">BACK</button></td>
+        <td><button class=".direction-button" onmousedown="onDirectionButtonMouseDown('back')" onmouseup="onDirectionButtonMouseUp('stop')">BACK</button></td>
         <td></td>
       </tr>
 
