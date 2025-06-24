@@ -1,6 +1,6 @@
 import os
 import subprocess
-import logger
+from . import logger
 from pathlib import Path
 
 
