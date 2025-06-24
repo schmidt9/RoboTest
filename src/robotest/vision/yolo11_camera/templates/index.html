@@ -19,6 +19,15 @@
 	    height: 50px;
     }
 
+    .noselect {
+      -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+      -khtml-user-select: none; /* Konqueror HTML */
+      -moz-user-select: none; /* Firefox */
+      -ms-user-select: none; /* Internet Explorer/Edge */
+      user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+    }
+
     #message {
       font-size: 16px;
       width: 300px;
@@ -71,19 +80,19 @@
 
       <tr>
         <td></td>
-        <td><button class="direction-button" onpointerdown="onDirectionButtonMouseDown('forward')" onpointerup="onDirectionButtonMouseUp('stop')">FORWARD</button></td>
+        <td><button class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('forward')" onpointerup="onDirectionButtonMouseUp('stop')">FORWARD</button></td>
         <td></td>
       </tr>
 
       <tr>
-        <td><button class="direction-button" onpointerdown="onDirectionButtonMouseDown('left')" onpointerup="onDirectionButtonMouseUp('stop')">LEFT</button></td>
+        <td><button class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('left')" onpointerup="onDirectionButtonMouseUp('stop')">LEFT</button></td>
         <td></td>
-        <td><button class="direction-button" onpointerdown="onDirectionButtonMouseDown('right')" onpointerup="onDirectionButtonMouseUp('stop')">RIGHT</button></td>
+        <td><button class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('right')" onpointerup="onDirectionButtonMouseUp('stop')">RIGHT</button></td>
       </tr>
 
       <tr>
         <td></td>
-        <td><button class="direction-button" onpointerdown="onDirectionButtonMouseDown('back')" onpointerup="onDirectionButtonMouseUp('stop')">BACK</button></td>
+        <td><button class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('back')" onpointerup="onDirectionButtonMouseUp('stop')">BACK</button></td>
         <td></td>
       </tr>
 
