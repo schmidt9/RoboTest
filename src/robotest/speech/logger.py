@@ -30,16 +30,15 @@ def log(message: str):
 
 
 def start_measure():
-    log("Time measure started")
     global measure_time
     measure_time = True
+    log("Time measure started")
 
 
 def stop_measure():
     global measure_time
-    measure_time = False
     log("Time measure stopped")
-
+    measure_time = False
 
 if __name__ == "__main__":
     start_measure()

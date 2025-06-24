@@ -3,13 +3,17 @@ import subprocess
 from pathlib import Path
 from robotest.speech import microphone_utils
 from robotest.speech import logger
+from robotest.speech import player
 import asyncio
 import time
-
+import psutil
+import datetime
 
 root_path = Path(__file__).parent
 
 llm_tts_process = None
+
+output_file_path = f"{root_path}/output.wav"
 
 
 def start_server(blocking=False):
@@ -26,23 +30,8 @@ def start_server(blocking=False):
         piper_model_path,
         "--server",
         "--json-input",
-        "--output-raw",
-        "|",
-        "aplay"
+        f"--output_file {output_file_path}"
     ]
-
-    tts_command_part2 = [
-        "--device=plughw:0,0",
-        "-r",
-        "22050",
-        "-f",
-        "S16_LE",
-        "-t",
-        "raw",
-        "-"
-    ]
-
-    tts_command += tts_command_part2
 
     tts_command_str = " ".join(tts_command)
 
@@ -101,9 +90,35 @@ def speak_text(text: str):
     json_text = '{"text": "' + text.replace('"', '\\"') + '"}\n'
 
     llm_tts_process.stdin.write(json_text)
-    llm_tts_process.stdin.flush()  # TODO: wait for audio finish
+    llm_tts_process.stdin.flush()
+
+    print(f"Waiting for TTS output file at '{output_file_path}'...")
+    logger.start_measure()
+    #TODO: maybe add timeout to avoid deadlocks
+    while not os.path.exists(output_file_path):
+        time.sleep(0.1)
+
+    while is_file_in_use(output_file_path):
+        time.sleep(0.1)
+
+    logger.stop_measure()
     
-    time.sleep(2)
+    player.play_file(output_file_path, options="-r 22050 -f S16_LE -t raw")
+    os.remove(output_file_path)
+
+def is_file_in_use(fpath):
+    '''
+    https://stackoverflow.com/a/44615315/3004003
+    '''
+    for proc in psutil.process_iter():
+        try:
+            for item in proc.open_files():
+                if fpath == item.path:
+                    return True
+        except Exception:
+            pass
+
+    return False
 
 if __name__ == "__main__":
     start_server()
