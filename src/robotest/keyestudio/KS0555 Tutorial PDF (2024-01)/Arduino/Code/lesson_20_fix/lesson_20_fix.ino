@@ -76,6 +76,7 @@ bool flag;  //flag invariable, used to enter and exit a mode
 String buffer = "";
 char i2c_response = '0';
 bool received = false;
+bool has_wire_command = false;
 
 void setup() {
   Serial.begin(115200);
@@ -178,7 +179,9 @@ void loop() {
     delay(50);
   }
 
-  handleIRSignal();
+  if (!has_wire_command) {
+    handleIRSignal();
+  }
 }
 
 void handleIRSignal() {
@@ -195,28 +198,24 @@ void handleIRSignal() {
         }
       case IR_UP_CODE:
         {
-          Serial.println("Moving forward");
           last_timestamp = millis();
           Car_front();
           break;
         }
       case IR_DOWN_CODE:
         {
-          Serial.println("Moving back");
           last_timestamp = millis();
           Car_back();
           break;
         }
       case IR_LEFT_CODE:
         {
-          Serial.println("Moving left");
           last_timestamp = millis();
           Car_left();
           break;
         }
       case IR_RIGHT_CODE:
         {
-          Serial.println("Moving right");
           last_timestamp = millis();
           Car_right();
           break;
@@ -246,17 +245,23 @@ void onReceiveEvent(int howMany) {
     Serial.println("RECEIVED: " + String(c));
 
     i2c_response = c;
+    has_wire_command = true;
 
     switch (c) {
-      case 'F': Car_front(); break;  //the command to go front
+      case 'F': Car_front(); break;
 
-      case 'B': Car_back(); break;  //the command to go back
+      case 'B': Car_back(); break;
 
-      case 'L': Car_left(); break;  //the command to turn left
+      case 'L': Car_left(); break;
 
-      case 'R': Car_right(); break;  //the command to turn right
+      case 'R': Car_right(); break;
 
-      case 'S': Car_Stop(); break;  //stop
+      case 'S': 
+      {
+        Car_Stop(); 
+        has_wire_command = false;
+        break;
+      }
     }
   }
 }
@@ -612,6 +617,7 @@ void IIC_end() {
 
 /***************motor runs****************/
 void Car_back() {
+  Serial.println("Car_back");
   digitalWrite(MR_Ctrl, LOW);
   analogWrite(MR_PWM, speeds_R);
   digitalWrite(ML_Ctrl, LOW);
@@ -620,6 +626,7 @@ void Car_back() {
 }
 
 void Car_front() {
+  Serial.println("Car_front");
   digitalWrite(MR_Ctrl, HIGH);
   analogWrite(MR_PWM, 255 - speeds_R);
   digitalWrite(ML_Ctrl, HIGH);
@@ -628,6 +635,7 @@ void Car_front() {
 }
 
 void Car_left() {
+  Serial.println("Car_left");
   digitalWrite(MR_Ctrl, HIGH);
   analogWrite(MR_PWM, 255 - speeds_R);
   digitalWrite(ML_Ctrl, LOW);
@@ -636,6 +644,7 @@ void Car_left() {
 }
 
 void Car_right() {
+  Serial.println("Car_right");
   digitalWrite(MR_Ctrl, LOW);
   analogWrite(MR_PWM, speeds_R);
   digitalWrite(ML_Ctrl, HIGH);
