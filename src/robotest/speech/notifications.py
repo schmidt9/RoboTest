@@ -1,5 +1,5 @@
 import os
-import player
+from robotest.speech import player
 
 def play_ready_notification():
     dir_path = os.path.dirname(os.path.realpath(__file__))

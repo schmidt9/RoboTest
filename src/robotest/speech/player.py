@@ -4,11 +4,17 @@ from . import logger
 from pathlib import Path
 
 
-def play_file(file_path: str):
+def play_file(file_path: str, options: str = None):
     logger.log("Start playing file")
+
+    command = (
+            f"aplay --device=plughw:0,0 {file_path}" 
+            if options is None 
+            else f"aplay --device=plughw:0,0 {options} {file_path}"
+            )
     
     # not using sounddevice here because it freezes on play() for some reason
-    subprocess.run([f"aplay --device=plughw:0,0 {file_path}"], shell=True)
+    subprocess.run([command], shell=True)
 
     logger.log("End playing file")
 
