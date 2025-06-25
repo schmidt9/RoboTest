@@ -97,7 +97,7 @@
           return false;
         }
 
-        if (speed <= 0 || speed > 128) {
+        if (speed < 0 || speed > 255) {
           alert("Invalid speed value: " + speed);
           return false;
         } 
@@ -123,7 +123,14 @@
         return;
       }
 
-      //
+      var command = "u" + leftSpeed + "#"
+      sendCommand(command, "/speed");
+
+      command = "v" + rightSpeed + "#"
+      sendCommand(command, "/speed");
+
+      command = "t" + turnSpeed + "#"
+      sendCommand(command, "/speed");
     }
   </script>
 </head>
