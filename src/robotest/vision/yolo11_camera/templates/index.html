@@ -18,15 +18,19 @@
 
       switch (event.key) {
         case "w":
+        case "ArrowUp":
           sendCommand("forward", "/direction");
           break;
         case "a":
+        case "ArrowLeft":
           sendCommand("left", "/direction");
           break;
         case "d":
+        case "ArrowRight":
           sendCommand("right", "/direction");
           break;
         case "s":
+        case "ArrowDown":
           sendCommand("back", "/direction");
           break;
       }
