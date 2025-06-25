@@ -38,7 +38,7 @@ unsigned char clear[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 char ble_val;               //used to save the Bluetooth value
 byte speeds_L = 200;        //the initial speed of the left motor is 200
 byte speeds_R = 200;        //the initial speed of the right motor is 200
-String speeds_l, speeds_r;  //receive PWM characters and convert them into PWM value
+byte speeds_turn = 200;     //speed for turning left/right 
 
 #define servoPin 10     //servo Pin
 #define light_L_Pin A1  //define the pin of the left photoresistor
@@ -143,12 +143,12 @@ void loop() {
       case 'i': Light_following(); break;  //enter light following mode
 
       case 'u':
-        speeds_l = Serial.readStringUntil('#');
+        String speeds_l = Serial.readStringUntil('#');
         speeds_L = String(speeds_l).toInt();
         break;  //start by receiving u, end by receiving characters # and convert into the integer
 
       case 'v':
-        speeds_r = Serial.readStringUntil('#');
+        String speeds_r = Serial.readStringUntil('#');
         speeds_R = String(speeds_r).toInt();
         break;  //start by receiving u, end by receiving characters # and convert into the integer
 
@@ -618,45 +618,59 @@ void IIC_end() {
 /***************motor runs****************/
 void Car_back() {
   Serial.println("Car_back");
+
   digitalWrite(MR_Ctrl, LOW);
   analogWrite(MR_PWM, speeds_R);
+
   digitalWrite(ML_Ctrl, LOW);
   analogWrite(ML_PWM, speeds_L);
+
   matrix_display(back);  //show the image of going back
 }
 
 void Car_front() {
   Serial.println("Car_front");
+
   digitalWrite(MR_Ctrl, HIGH);
   analogWrite(MR_PWM, 255 - speeds_R);
+
   digitalWrite(ML_Ctrl, HIGH);
   analogWrite(ML_PWM, 255 - speeds_L);
+
   matrix_display(front);  //show the image of going front
 }
 
 void Car_left() {
   Serial.println("Car_left");
+
   digitalWrite(MR_Ctrl, HIGH);
-  analogWrite(MR_PWM, 255 - speeds_R);
+  analogWrite(MR_PWM, 255 - speeds_turn);
+
   digitalWrite(ML_Ctrl, LOW);
-  analogWrite(ML_PWM, speeds_L);
+  analogWrite(ML_PWM, speeds_turn);
+
   matrix_display(left);  //show the image of turning left
 }
 
 void Car_right() {
   Serial.println("Car_right");
+
   digitalWrite(MR_Ctrl, LOW);
-  analogWrite(MR_PWM, speeds_R);
+  analogWrite(MR_PWM, speeds_turn);
+
   digitalWrite(ML_Ctrl, HIGH);
-  analogWrite(ML_PWM, 255 - speeds_L);
+  analogWrite(ML_PWM, 255 - speeds_turn);
+
   matrix_display(right);  //show the image of turning right
 }
 
 void Car_Stop() {
   digitalWrite(MR_Ctrl, LOW);
   analogWrite(MR_PWM, 0);
+
   digitalWrite(ML_Ctrl, LOW);
   analogWrite(ML_PWM, 0);
+
   matrix_display(STOP01);  //show the stop image
 }
 //**************************************************************
