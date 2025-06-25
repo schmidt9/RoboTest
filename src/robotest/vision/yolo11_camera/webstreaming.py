@@ -32,15 +32,15 @@ def direction():
 
     match received_value:
         case "forward":
-            i2c_master.send_command(ord('F'))
+            i2c_master.send_byte_command(ord('F'))
         case "back":
-            i2c_master.send_command(ord('B'))
+            i2c_master.send_byte_command(ord('B'))
         case "left":
-            i2c_master.send_command(ord('L'))
+            i2c_master.send_byte_command(ord('L'))
         case "right":
-            i2c_master.send_command(ord('R'))
+            i2c_master.send_byte_command(ord('R'))
         case "stop":
-            i2c_master.send_command(ord('S'))
+            i2c_master.send_byte_command(ord('S'))
         case _:
             print(f"Unknown command {received_value}")
 
@@ -57,6 +57,17 @@ def message():
     speak.speak(received_value)
 
     # Process the data
+    response_data = {'message': f'Data received: {received_value}'}
+    return jsonify(response_data)
+
+
+@app.route("/speed", methods=['GET', 'POST'])
+def speed():
+    data = request.get_json()
+    received_value = data.get('data')
+
+    # TODO
+
     response_data = {'message': f'Data received: {received_value}'}
     return jsonify(response_data)
 
