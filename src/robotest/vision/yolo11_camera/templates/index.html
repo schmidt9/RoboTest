@@ -7,39 +7,69 @@
 
   <link rel="stylesheet" type="text/css" href="style.css">
 
-<script>
-  function sendCommand(command, endpoint) {
-    const data = { 'data': command };
+  <script>
+    var isKeydown = false;
 
-    fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(response => {
-      console.log('Success:', response);
-    })
-    .catch((error) => {
-      console.error('Error:', error);
+    document.addEventListener('keydown', function(event) {
+      if (isKeydown) {
+        return;
+      }
+
+      switch (event.key) {
+        case "w":
+          sendCommand("forward", "/direction");
+          break;
+        case "a":
+          sendCommand("left", "/direction");
+          break;
+        case "d":
+          sendCommand("right", "/direction");
+          break;
+        case "s":
+          sendCommand("back", "/direction");
+          break;
+      }
+
+      isKeydown = true;
     });
-  }
 
-  function onDirectionButtonMouseDown(direction) {
-    sendCommand(direction, "/direction");
-  }
+    document.addEventListener('keyup', function(event) {
+      sendCommand("stop", "/direction");
+      isKeydown = false;
+    });
 
-  function onDirectionButtonMouseUp(direction) {
-    sendCommand(direction, "/direction");
-  }
+    function sendCommand(command, endpoint) {
+      const data = { 'data': command };
 
-  function onSendMessageButtonClick() {
-    var message = document.getElementById("message").value;
-    sendCommand(message, "/message");
-  }
-</script>
+      fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(response => {
+        console.log('Success:', response);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+    }
+
+    function onDirectionButtonMouseDown(direction) {
+      sendCommand(direction, "/direction");
+    }
+
+    function onDirectionButtonMouseUp(direction) {
+      sendCommand(direction, "/direction");
+    }
+
+    function onSendMessageButtonClick() {
+      var message = document.getElementById("message").value;
+      sendCommand(message, "/message");
+    }
+  </script>
 </head>
 
 <body>
