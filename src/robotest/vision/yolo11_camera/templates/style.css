@@ -1,0 +1,59 @@
+body {
+
+}
+
+img {
+  width: 400px;
+  height: 400px;
+  margin: auto;
+}
+
+table {
+  margin: auto;
+  width: 400px;
+  table-layout: fixed;
+}
+
+td {
+ text-align: center;
+ padding: 10px;
+}
+
+.direction-button {
+  width: 100%;
+  height: 50px;
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+#container {
+  margin: auto;
+  text-align: center;
+  background: #CCC;
+}
+
+#message {
+  font-size: 16px;
+  width: 300px;
+}
+
+#send-button {
+  height: 50px;
+}
+
+@media screen and (max-width: 800px) {
+  table {
+    width: 100%;
+  }
+
+  #message {
+    width: 90%;
+  }
+}

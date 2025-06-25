@@ -1,106 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <title>Pi Video Surveillance</title>
 
-  <style type="text/css">
-    img {
-      width: 400px;
-      height: 400px;
-    }
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 
-    td {
-	    text-align: center;
-	    padding: 10px;
-    }
-    
-    .direction-button {
-	    width: 100px;
-	    height: 50px;
-    }
+  <link rel="stylesheet" type="text/css" href="style.css">
 
-    .noselect {
-      -webkit-touch-callout: none; /* iOS Safari */
-      -webkit-user-select: none; /* Safari */
-      -khtml-user-select: none; /* Konqueror HTML */
-      -moz-user-select: none; /* Firefox */
-      -ms-user-select: none; /* Internet Explorer/Edge */
-      user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
-    }
+<script>
+  function sendCommand(command, endpoint) {
+    const data = { 'data': command };
 
-    #message {
-      font-size: 16px;
-      width: 300px;
-    }
+    fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(response => {
+      console.log('Success:', response);
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+  }
 
-    #send-button {
-      height: 50px;
-    }
-  </style>
+  function onDirectionButtonMouseDown(direction) {
+    sendCommand(direction, "/direction");
+  }
 
-  <script>
-    function sendCommand(command, endpoint) {
-      const data = { 'data': command };
+  function onDirectionButtonMouseUp(direction) {
+    sendCommand(direction, "/direction");
+  }
 
-      fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      })
-      .then(response => response.json())
-      .then(response => {
-        console.log('Success:', response);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-    }
-
-    function onDirectionButtonMouseDown(direction) {
-      sendCommand(direction, "/direction");
-    }
-
-    function onDirectionButtonMouseUp(direction) {
-      sendCommand(direction, "/direction");
-    }
-
-    function onSendMessageButtonClick() {
-      var message = document.getElementById("message").value;
-      sendCommand(message, "/message");
-    }
-  </script>
+  function onSendMessageButtonClick() {
+    var message = document.getElementById("message").value;
+    sendCommand(message, "/message");
+  }
+</script>
 </head>
+
 <body>
-  <h1>Pi Video Surveillance</h1>
-  <img src="{{ url_for('video_feed') }}">
-  <table>
-    <tbody>
+  <div id="container">
+    <img alt="camera output" src="{{ url_for('video_feed') }}">
+    <table>
+      <tbody>
 
-      <tr>
-        <td></td>
-        <td><button class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('forward')" onpointerup="onDirectionButtonMouseUp('stop')">FORWARD</button></td>
-        <td></td>
-      </tr>
+        <tr>
+          <td></td>
+          <td><button class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('forward')" onpointerup="onDirectionButtonMouseUp('stop')">FORWARD</button></td>
+          <td></td>
+        </tr>
 
-      <tr>
-        <td><button class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('left')" onpointerup="onDirectionButtonMouseUp('stop')">LEFT</button></td>
-        <td></td>
-        <td><button class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('right')" onpointerup="onDirectionButtonMouseUp('stop')">RIGHT</button></td>
-      </tr>
+        <tr>
+          <td><button class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('left')" onpointerup="onDirectionButtonMouseUp('stop')">LEFT</button></td>
+          <td></td>
+          <td><button class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('right')" onpointerup="onDirectionButtonMouseUp('stop')">RIGHT</button></td>
+        </tr>
 
-      <tr>
-        <td></td>
-        <td><button class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('back')" onpointerup="onDirectionButtonMouseUp('stop')">BACK</button></td>
-        <td></td>
-      </tr>
+        <tr>
+          <td></td>
+          <td><button class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('back')" onpointerup="onDirectionButtonMouseUp('stop')">BACK</button></td>
+          <td></td>
+        </tr>
 
-    </tbody>
-  </table>
+      </tbody>
+    </table>
 
-  <textarea id="message" rows="4" cols="10">test</textarea><br>
-  <button id="send-button" onclick="onSendMessageButtonClick()">Send message</button>
-
+    <textarea id="message" title="enter message" rows="4">test</textarea><br>
+    <button id="send-button" type="submit" onclick="onSendMessageButtonClick()">Send message</button>
+  </div>
 </body>
 </html>
