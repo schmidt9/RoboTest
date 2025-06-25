@@ -16,23 +16,33 @@
         return;
       }
 
+      var button = null;
+
       switch (event.key) {
         case "w":
         case "ArrowUp":
+          button = document.getElementById("direction-button-forward");
           sendCommand("forward", "/direction");
           break;
         case "a":
         case "ArrowLeft":
+          button = document.getElementById("direction-button-left");
           sendCommand("left", "/direction");
           break;
         case "d":
         case "ArrowRight":
+          button = document.getElementById("direction-button-right");
           sendCommand("right", "/direction");
           break;
         case "s":
         case "ArrowDown":
+          button = document.getElementById("direction-button-back");
           sendCommand("back", "/direction");
           break;
+      }
+
+      if (button != null) {
+        button.classList.add("direction-button-highlight");
       }
 
       isKeydown = true;
@@ -40,6 +50,10 @@
 
     document.addEventListener('keyup', function(event) {
       sendCommand("stop", "/direction");
+      
+      const button = document.querySelector(".direction-button-highlight");
+      button.classList.remove("direction-button-highlight");
+
       isKeydown = false;
     });
 
@@ -85,19 +99,19 @@
 
         <tr>
           <td></td>
-          <td><button class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('forward')" onpointerup="onDirectionButtonMouseUp('stop')">FORWARD</button></td>
+          <td><button id="direction-button-forward" class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('forward')" onpointerup="onDirectionButtonMouseUp('stop')">FORWARD</button></td>
           <td></td>
         </tr>
 
         <tr>
-          <td><button class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('left')" onpointerup="onDirectionButtonMouseUp('stop')">LEFT</button></td>
+          <td><button id="direction-button-left" class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('left')" onpointerup="onDirectionButtonMouseUp('stop')">LEFT</button></td>
           <td></td>
-          <td><button class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('right')" onpointerup="onDirectionButtonMouseUp('stop')">RIGHT</button></td>
+          <td><button id="direction-button-right" class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('right')" onpointerup="onDirectionButtonMouseUp('stop')">RIGHT</button></td>
         </tr>
 
         <tr>
           <td></td>
-          <td><button class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('back')" onpointerup="onDirectionButtonMouseUp('stop')">BACK</button></td>
+          <td><button id="direction-button-back" class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('back')" onpointerup="onDirectionButtonMouseUp('stop')">BACK</button></td>
           <td></td>
         </tr>
 
