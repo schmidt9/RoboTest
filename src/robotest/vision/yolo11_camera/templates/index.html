@@ -49,6 +49,12 @@
     });
 
     document.addEventListener('keyup', function(event) {
+	const keys = ["w", "ArrowUp", "a", "ArrowLeft", "d", "ArrowRight", "s", "ArrowDown"];
+
+	if (!keys.includes(event.key)) {
+		return;
+	}
+
       sendCommand("stop", "/direction");
       
       const button = document.querySelector(".direction-button-highlight");
