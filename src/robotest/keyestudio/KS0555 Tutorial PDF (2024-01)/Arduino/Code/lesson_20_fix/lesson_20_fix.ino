@@ -31,14 +31,14 @@ unsigned char clear[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
 #define SCL_Pin 8   //set the pin of clock to D8
 #define SDA_Pin 11  //set the data pin to D11
 
-#define ML_Ctrl 4           //define the direction control pin of the left motor as 4
-#define ML_PWM 6            //define the PWM control pin of the left motor
-#define MR_Ctrl 2           //define the direction control pin of the right sensor
-#define MR_PWM 5            //define the PWM control pin of the right motor
-char ble_val;               //used to save the Bluetooth value
-byte speeds_L = 200;        //the initial speed of the left motor is 200
-byte speeds_R = 200;        //the initial speed of the right motor is 200
-byte speeds_turn = 200;     //speed for turning left/right 
+#define ML_Ctrl 4        //define the direction control pin of the left motor as 4
+#define ML_PWM 6         //define the PWM control pin of the left motor
+#define MR_Ctrl 2        //define the direction control pin of the right sensor
+#define MR_PWM 5         //define the PWM control pin of the right motor
+char ble_val;            //used to save the Bluetooth value
+byte speeds_L = 200;     //the initial speed of the left motor is 200
+byte speeds_R = 200;     //the initial speed of the right motor is 200
+byte speeds_turn = 200;  //speed for turning left/right
 
 #define servoPin 10     //servo Pin
 #define light_L_Pin A1  //define the pin of the left photoresistor
@@ -74,7 +74,7 @@ int a2;
 bool flag;  //flag invariable, used to enter and exit a mode
 
 String buffer = "";
-char i2c_response = '0';
+String i2c_response = "";
 bool received = false;
 bool has_wire_command = false;
 
@@ -240,36 +240,57 @@ bool isIRHoldReleased() {
 
 // Function that executes whenever data is received from master
 void onReceiveEvent(int howMany) {
-  while (Wire.available()) {  // loop through all but the last
-    char c = Wire.read();     // receive byte as a character
-    Serial.println("RECEIVED: " + String(c));
+  String data = "";
 
-    i2c_response = c;
-    has_wire_command = true;
+  while (Wire.available()) {    // loop through all but the last
+    data += String((char) Wire.read());  // receive byte as a character
+  }
 
-    switch (c) {
-      case 'F': Car_front(); break;
+  if (data.length() == 0) {
+    return;
+  }
 
-      case 'B': Car_back(); break;
+  Serial.println("Received data: '" + data + "', length: " + data.length());
 
-      case 'L': Car_left(); break;
+  i2c_response = data;
+  has_wire_command = true;
 
-      case 'R': Car_right(); break;
+  char charCommand = data[0];
 
-      case 'S': 
+  switch (charCommand) {
+    case 'F': Car_front(); break;
+    case 'B': Car_back(); break;
+    case 'L': Car_left(); break;
+    case 'R': Car_right(); break;
+    case 'S':
       {
-        Car_Stop(); 
+        Car_Stop();
         has_wire_command = false;
         break;
       }
+    case 'u':
+    {
+      String value = data.substring(1, data.length() - 1);
+      speeds_L = value.toInt();
     }
+    case 'v':
+    {
+      String value = data.substring(1, data.length() - 1);
+      speeds_R = value.toInt();
+    }
+    case 't':
+    {
+      String value = data.substring(1, data.length() - 1);
+      speeds_turn = value.toInt();
+    }
+
   }
 }
 
 void onRequestEvent() {
-  Wire.print(i2c_response);
+  Wire.print(i2c_response); // Note: some responses may be skipped if onReceiveEvent receives events too quick
 
-  Serial.println("SENT ON REQUEST: " + String(i2c_response));
+  Serial.println("SENT ON REQUEST: " + i2c_response);
 }
 
 //Control the ultrasonic sensor
