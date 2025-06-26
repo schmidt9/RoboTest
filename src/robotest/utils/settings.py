@@ -9,9 +9,9 @@ class Settings:
 
     def __init__(self) -> None:
         json_dict = self.read()
-        self.speed_left: str = json_dict["speed_left"]
-        self.speed_right: str = json_dict["speed_right"]
-        self.speed_turn: str = json_dict["speed_turn"]
+        self.speed_left: int = json_dict["speed_left"]
+        self.speed_right: int = json_dict["speed_right"]
+        self.speed_turn: int = json_dict["speed_turn"]
 
     def read(self):
         with open(json_path) as file:

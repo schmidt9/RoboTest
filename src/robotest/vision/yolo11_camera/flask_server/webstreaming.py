@@ -6,6 +6,7 @@ from flask import render_template
 import threading
 import robotest.speech.speak as speak
 import robotest.keyestudio.i2c_master as i2c_master
+import robotest.keyestudio.commands_helper as commands_helper
 from robotest.utils.settings import settings
 from robotest.vision.yolo11_camera import yolo11_camera
 
@@ -32,19 +33,7 @@ def direction():
     data = request.get_json()
     received_value = data.get("data")
 
-    match received_value:
-        case "forward":
-            i2c_master.send_byte_command(ord("F"))
-        case "back":
-            i2c_master.send_byte_command(ord("B"))
-        case "left":
-            i2c_master.send_byte_command(ord("L"))
-        case "right":
-            i2c_master.send_byte_command(ord("R"))
-        case "stop":
-            i2c_master.send_byte_command(ord("S"))
-        case _:
-            print(f"Unknown command {received_value}")
+    commands_helper.send_direction_command(received_value)
 
     # Process the data
     response_data = {"message": f"Data received: {received_value}"}
