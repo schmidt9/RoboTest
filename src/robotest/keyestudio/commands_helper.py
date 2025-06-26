@@ -45,6 +45,7 @@ def save_and_send_speed_command(command: str):
         case _:
             print(f"Unknown command {command}")
 
+    settings.write()
     i2c_master.send_str_command(command)
 
 
