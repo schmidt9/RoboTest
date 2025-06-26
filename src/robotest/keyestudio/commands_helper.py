@@ -1,5 +1,5 @@
 from robotest.utils.settings import settings
-import i2c_master
+from robotest.keyestudio import i2c_master
 
 
 # Using class for constants to be able to use it in match statement
