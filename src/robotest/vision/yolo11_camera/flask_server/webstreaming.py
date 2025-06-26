@@ -4,10 +4,9 @@ from flask import Response
 from flask import Flask, request, jsonify
 from flask import render_template
 import threading
-import argparse
-import yolo11_camera
 import robotest.speech.speak as speak 
 import robotest.keyestudio.i2c_master as i2c_master
+from .. import yolo11_camera
 
 app = Flask(__name__)
 
@@ -86,7 +85,7 @@ def run(host: str, port: int):
 def run_default():
     port = 8888
     print(f"Running on localhost:{port}")
-    run( "0.0.0.0", port)
+    run("0.0.0.0", port)
 
 
 if __name__ == '__main__':
