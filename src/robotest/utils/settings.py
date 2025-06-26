@@ -17,13 +17,12 @@ class Settings:
         with open(json_path) as file:
             return json.load(file)
 
-    def write(self):
-        json_str = json.dumps(
-            self, default=lambda o: o.__dict__, sort_keys=True, indent=4
-        )
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
+    def write(self):
         with open(json_path) as file:
-            json.dump(json_str, file)
+            json.dump(self.toJSON(), file)
 
 
 settings = Settings()

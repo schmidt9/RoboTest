@@ -12,6 +12,10 @@
   <script>
     var isKeydown = false;
 
+    document.addEventListener("DOMContentLoaded", function (event) {
+      loadSettings();
+    });
+
     document.addEventListener('keydown', function (event) {
       if (isKeydown) {
         return;
@@ -77,6 +81,25 @@
         .then(response => response.json())
         .then(response => {
           console.log('Success:', response);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    }
+
+    function loadSettings() {
+      const endpoint = "/get_speed"
+      fetch(endpoint, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => response.json())
+        .then(response => {
+          document.getElementById("left-speed-input").value = response.speed.left;
+          document.getElementById("right-speed-input").value = response.speed.right;
+          document.getElementById("turn-speed-input").value = response.speed.turn;
         })
         .catch((error) => {
           console.error('Error:', error);
