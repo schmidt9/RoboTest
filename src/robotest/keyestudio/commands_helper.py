@@ -1,4 +1,4 @@
-from utils.settings import settings
+from robotest.utils.settings import settings
 import i2c_master
 
 
