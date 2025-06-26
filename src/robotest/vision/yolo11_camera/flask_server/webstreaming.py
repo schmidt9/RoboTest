@@ -57,7 +57,7 @@ def speed():
     data = request.get_json()
     received_value = data.get("data")
 
-    i2c_master.send_str_command(received_value)
+    commands_helper.save_and_send_speed_command(received_value)
 
     response_data = {"message": f"Data received: {received_value}"}
     return jsonify(response_data)
