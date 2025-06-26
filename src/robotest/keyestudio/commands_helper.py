@@ -10,18 +10,18 @@ class Prefix:
 
 
 def send_speed_left():
-    speed_left = f"{Prefix.SPEED_LEFT}{settings.speed_left}#"
-    i2c_master.send_str_command(speed_left)
+    command = f"{Prefix.SPEED_LEFT}{settings.speed_left}#"
+    i2c_master.send_str_command(command)
 
 
 def send_speed_right():
-    speed_right = f"{Prefix.SPEED_RIGHT}{settings.speed_right}#"
-    i2c_master.send_str_command(speed_right)
+    command = f"{Prefix.SPEED_RIGHT}{settings.speed_right}#"
+    i2c_master.send_str_command(command)
 
 
 def send_speed_turn():
-    speed_turn = f"{Prefix.SPEED_TURN}{settings.speed_right}#"
-    i2c_master.send_str_command(speed_turn)
+    command = f"{Prefix.SPEED_TURN}{settings.speed_turn}#"
+    i2c_master.send_str_command(command)
 
 
 def send_settings_to_i2c_slave():
