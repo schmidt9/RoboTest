@@ -1,5 +1,5 @@
 import json
-import os.path
+import os
 from pathlib import Path
 from dataclasses import dataclass, asdict
 
@@ -14,6 +14,10 @@ class Settings:
 
     @staticmethod
     def read():
+        if not os.path.exists(json_path):
+            settings = Settings(200, 200, 150)
+            settings.write()
+
         with open(json_path) as file:
             dict = json.load(file)
             settings = Settings(**dict)
