@@ -188,3 +188,7 @@ fabric.properties
 # vim
 
 *.swp
+
+# custom
+
+src/robotest/utils/settings.json
