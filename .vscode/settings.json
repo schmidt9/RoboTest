@@ -3,5 +3,8 @@
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
-    "notebook.defaultFormatter": "ms-python.autopep8"
+    "notebook.defaultFormatter": "ms-python.autopep8",
+    "[html]": {
+        "editor.defaultFormatter": "vscode.html-language-features"
+    }
 }

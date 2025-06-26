@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <title>Pi Video Surveillance</title>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="stylesheet" type="text/css" href="../static/styles/style.css">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/style.css') }}">
@@ -11,7 +12,7 @@
   <script>
     var isKeydown = false;
 
-    document.addEventListener('keydown', function(event) {
+    document.addEventListener('keydown', function (event) {
       if (isKeydown) {
         return;
       }
@@ -48,15 +49,15 @@
       isKeydown = true;
     });
 
-    document.addEventListener('keyup', function(event) {
-	const keys = ["w", "ArrowUp", "a", "ArrowLeft", "d", "ArrowRight", "s", "ArrowDown"];
+    document.addEventListener('keyup', function (event) {
+      const keys = ["w", "ArrowUp", "a", "ArrowLeft", "d", "ArrowRight", "s", "ArrowDown"];
 
-	if (!keys.includes(event.key)) {
-		return;
-	}
+      if (!keys.includes(event.key)) {
+        return;
+      }
 
       sendCommand("stop", "/direction");
-      
+
       const button = document.querySelector(".direction-button-highlight");
       button.classList.remove("direction-button-highlight");
 
@@ -73,13 +74,13 @@
         },
         body: JSON.stringify(data)
       })
-      .then(response => response.json())
-      .then(response => {
-        console.log('Success:', response);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
+        .then(response => response.json())
+        .then(response => {
+          console.log('Success:', response);
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
     }
 
     function onDirectionButtonMouseDown(direction) {
@@ -106,7 +107,7 @@
         if (speed < 0 || speed > 255) {
           alert("Invalid speed value: " + speed);
           return false;
-        } 
+        }
 
         return true;
       }
@@ -149,19 +150,27 @@
 
         <tr>
           <td></td>
-          <td><button id="direction-button-forward" class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('forward')" onpointerup="onDirectionButtonMouseUp('stop')">FORWARD</button></td>
+          <td><button id="direction-button-forward" class="direction-button noselect"
+              onpointerdown="onDirectionButtonMouseDown('forward')"
+              onpointerup="onDirectionButtonMouseUp('stop')">FORWARD</button></td>
           <td></td>
         </tr>
 
         <tr>
-          <td><button id="direction-button-left" class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('left')" onpointerup="onDirectionButtonMouseUp('stop')">LEFT</button></td>
+          <td><button id="direction-button-left" class="direction-button noselect"
+              onpointerdown="onDirectionButtonMouseDown('left')"
+              onpointerup="onDirectionButtonMouseUp('stop')">LEFT</button></td>
           <td></td>
-          <td><button id="direction-button-right" class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('right')" onpointerup="onDirectionButtonMouseUp('stop')">RIGHT</button></td>
+          <td><button id="direction-button-right" class="direction-button noselect"
+              onpointerdown="onDirectionButtonMouseDown('right')"
+              onpointerup="onDirectionButtonMouseUp('stop')">RIGHT</button></td>
         </tr>
 
         <tr>
           <td></td>
-          <td><button id="direction-button-back" class="direction-button noselect" onpointerdown="onDirectionButtonMouseDown('back')" onpointerup="onDirectionButtonMouseUp('stop')">BACK</button></td>
+          <td><button id="direction-button-back" class="direction-button noselect"
+              onpointerdown="onDirectionButtonMouseDown('back')"
+              onpointerup="onDirectionButtonMouseUp('stop')">BACK</button></td>
           <td></td>
         </tr>
 
@@ -189,4 +198,5 @@
     <br>
   </div>
 </body>
+
 </html>
