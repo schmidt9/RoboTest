@@ -97,9 +97,9 @@
       })
         .then(response => response.json())
         .then(response => {
-          document.getElementById("left-speed-input").value = response.speed.left;
-          document.getElementById("right-speed-input").value = response.speed.right;
-          document.getElementById("turn-speed-input").value = response.speed.turn;
+          document.getElementById("left-speed-input").value = response.speed_left;
+          document.getElementById("right-speed-input").value = response.speed_right;
+          document.getElementById("turn-speed-input").value = response.speed_turn;
         })
         .catch((error) => {
           console.error('Error:', error);

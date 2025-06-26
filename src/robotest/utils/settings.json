@@ -1,7 +1,5 @@
 {
-    "speed" : {
-        "left" : 200,
-        "right" : 200,
-        "turn" : 150
-    }
+    "speed_left": 200,
+    "speed_right": 200,
+    "speed_turn": 150
 }
