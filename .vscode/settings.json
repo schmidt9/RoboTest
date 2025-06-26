@@ -1,7 +1,7 @@
 {
     "editor.defaultFormatter": "ms-python.autopep8",
     "[python]": {
-        "editor.defaultFormatter": "charliermarsh.ruff"
+        "editor.defaultFormatter": "ms-python.black-formatter"
     },
     "notebook.defaultFormatter": "ms-python.autopep8"
 }
