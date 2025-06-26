@@ -7,7 +7,7 @@ import threading
 import robotest.speech.speak as speak
 import robotest.keyestudio.i2c_master as i2c_master
 from robotest.utils.settings import settings
-from .. import yolo11_camera
+from robotest.vision.yolo11_camera import yolo11_camera
 
 app = Flask(__name__)
 
