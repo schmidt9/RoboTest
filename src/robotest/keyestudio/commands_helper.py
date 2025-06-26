@@ -62,6 +62,3 @@ def send_direction_command(command: str):
             i2c_master.send_byte_command(ord("S"))
         case _:
             print(f"Unknown command {command}")
-
-
-send_settings_to_i2c_slave()

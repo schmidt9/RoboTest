@@ -74,6 +74,8 @@ def run(host: str, port: int):
     t.daemon = True
     t.start()
 
+    commands_helper.send_settings_to_i2c_slave()
+
     speak.start_server()
 
     app.run(host=host, port=port, debug=True, threaded=True, use_reloader=False)
