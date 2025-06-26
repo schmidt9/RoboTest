@@ -27,5 +27,3 @@ class Settings:
 
 
 settings = Settings()
-
-print(settings)
