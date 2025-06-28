@@ -4,7 +4,7 @@
 <head>
   <title>Pi Video Surveillance</title>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 
   <link rel="stylesheet" type="text/css" href="../static/styles/style.css">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/style.css') }}">
@@ -175,25 +175,25 @@
           <td></td>
           <td><button id="direction-button-forward" class="direction-button noselect"
               onpointerdown="onDirectionButtonMouseDown('forward')"
-              onpointerup="onDirectionButtonMouseUp('stop')">FORWARD</button></td>
+              onpointerup="onDirectionButtonMouseUp('stop')">🡑</button></td>
           <td></td>
         </tr>
 
         <tr>
           <td><button id="direction-button-left" class="direction-button noselect"
               onpointerdown="onDirectionButtonMouseDown('left')"
-              onpointerup="onDirectionButtonMouseUp('stop')">LEFT</button></td>
+              onpointerup="onDirectionButtonMouseUp('stop')">🡐</button></td>
           <td></td>
           <td><button id="direction-button-right" class="direction-button noselect"
               onpointerdown="onDirectionButtonMouseDown('right')"
-              onpointerup="onDirectionButtonMouseUp('stop')">RIGHT</button></td>
+              onpointerup="onDirectionButtonMouseUp('stop')">🡒</button></td>
         </tr>
 
         <tr>
           <td></td>
           <td><button id="direction-button-back" class="direction-button noselect"
               onpointerdown="onDirectionButtonMouseDown('back')"
-              onpointerup="onDirectionButtonMouseUp('stop')">BACK</button></td>
+              onpointerup="onDirectionButtonMouseUp('stop')">🡓</button></td>
           <td></td>
         </tr>
 

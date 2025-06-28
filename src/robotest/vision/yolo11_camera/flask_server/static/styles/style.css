@@ -1,7 +1,3 @@
-body {
-
-}
-
 img {
   width: 400px;
   height: 400px;
@@ -22,6 +18,7 @@ td {
 .direction-button {
   width: 100%;
   height: 50px;
+  font-size: 26px;
 }
 
 .direction-button-highlight {
@@ -53,7 +50,16 @@ td {
 }
 
 @media screen and (max-width: 800px) {
+  img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+  }
+
   table {
+    width: 100%;
+  }
+
+  #container {
     width: 100%;
   }
 
