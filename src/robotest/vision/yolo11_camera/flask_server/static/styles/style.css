@@ -51,7 +51,7 @@ td {
 
 @media screen and (max-width: 800px) {
   img {
-    width: 100%;
+    width: 90%;
     aspect-ratio: 1 / 1;
   }
 
