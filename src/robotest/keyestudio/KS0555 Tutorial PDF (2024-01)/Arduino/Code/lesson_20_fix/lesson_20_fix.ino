@@ -46,6 +46,9 @@ byte speeds_turn = 200;  //speed for turning left/right
 int left_light;
 int right_light;
 
+#define FLASHLIGHT_PIN A3
+bool isFlashlightOn = false;
+
 #define Trig 12
 #define Echo 13  // built-in led
 float distance;  //Store the distance values detected by ultrasonic for following
@@ -59,6 +62,7 @@ float distance;  //Store the distance values detected by ultrasonic for followin
 #define IR_OK_CODE 0xFF02FD
 #define IR_1_CODE 0xFF6897
 #define IR_2_CODE 0xFF9867
+#define IR_3_CODE 0xFFB04F
 // IR Remote repeats button hold down signal about every 100 ms (+ some tolerance)
 #define IR_TIMEOUT_MILLIS 200
 
@@ -102,6 +106,8 @@ void setup() {
 
   pinMode(light_L_Pin, INPUT);
   pinMode(light_R_Pin, INPUT);
+
+  pinMode(FLASHLIGHT_PIN, OUTPUT);
 
   pinMode(Trig, OUTPUT);
   pinMode(Echo, INPUT);
@@ -222,6 +228,7 @@ void handleIRSignal() {
         }
       case IR_1_CODE: Avoid(); break;
       case IR_2_CODE: Dance(); break;
+      case IR_3_CODE: ToggleFlashlight(); break;
       default: break;
     }
 
@@ -468,6 +475,18 @@ void Dance() {
   MakeTone(1300, 1000);
 
   Car_Stop();
+}
+
+void ToggleFlashlight() {
+  if (isFlashlightOn) {
+    digitalWrite(FLASHLIGHT_PIN, LOW);
+    Serial.println("Flashlight off");
+  } else {
+    digitalWrite(FLASHLIGHT_PIN, HIGH);
+    Serial.println("Flashlight on");
+  }
+
+  isFlashlightOn = !isFlashlightOn;
 }
 
 /*****************obstacle avoidance******************/
