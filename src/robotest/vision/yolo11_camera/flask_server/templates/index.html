@@ -115,6 +115,10 @@
       sendCommand(direction, "/direction");
     }
 
+    function onFlashlightButtonClick() {
+      sendCommand("flashlight", "/flashlight");
+    }
+
     function onSendMessageButtonClick() {
       var message = document.getElementById("message").value;
       sendCommand(message, "/message");
@@ -176,25 +180,29 @@
           <td></td>
           <td><button id="direction-button-forward" class="direction-button noselect"
               onpointerdown="onDirectionButtonMouseDown('forward')"
-              onpointerup="onDirectionButtonMouseUp('stop')">&#8593</button></td>
+              onpointerup="onDirectionButtonMouseUp('stop')">FORWARD</button></td>
           <td></td>
         </tr>
 
         <tr>
           <td><button id="direction-button-left" class="direction-button noselect"
               onpointerdown="onDirectionButtonMouseDown('left')"
-              onpointerup="onDirectionButtonMouseUp('stop')">&#8592</button></td>
-          <td></td>
-          <td><button id="direction-button-right" class="direction-button noselect"
+              onpointerup="onDirectionButtonMouseUp('stop')">LEFT</button></td>
+          <td>
+            <button id="flashlight-button" class="noselect" onclick="onFlashlightButtonClick()">LIGHT</button>
+          </td>
+          <td>
+            <button id="direction-button-right" class="direction-button noselect"
               onpointerdown="onDirectionButtonMouseDown('right')"
-              onpointerup="onDirectionButtonMouseUp('stop')">&#8594</button></td>
+              onpointerup="onDirectionButtonMouseUp('stop')">RIGHT</button>
+          </td>
         </tr>
 
         <tr>
           <td></td>
           <td><button id="direction-button-back" class="direction-button noselect"
               onpointerdown="onDirectionButtonMouseDown('back')"
-              onpointerup="onDirectionButtonMouseUp('stop')">&#8595</button></td>
+              onpointerup="onDirectionButtonMouseUp('stop')">BACK</button></td>
           <td></td>
         </tr>
 

@@ -275,6 +275,7 @@ void onReceiveEvent(int howMany) {
         has_wire_command = false;
         break;
       }
+    case 'A': ToggleFlashlight(); break;
     case 'u':
     {
       String value = data.substring(1, data.length() - 1);

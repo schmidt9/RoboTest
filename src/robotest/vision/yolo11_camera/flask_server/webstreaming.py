@@ -40,6 +40,18 @@ def direction():
     return jsonify(response_data)
 
 
+@app.route("/flashlight", methods=["GET", "POST"])
+def flashlight():
+    data = request.get_json()
+    received_value = data.get("data")
+
+    commands_helper.send_flashlight_command()
+
+    # Process the data
+    response_data = {"message": f"Data received: {received_value}"}
+    return jsonify(response_data)
+
+
 @app.route("/message", methods=["GET", "POST"])
 def message():
     data = request.get_json()

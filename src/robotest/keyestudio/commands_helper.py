@@ -63,3 +63,7 @@ def send_direction_command(command: str):
             i2c_master.send_byte_command(ord("S"))
         case _:
             print(f"Unknown command {command}")
+
+
+def send_flashlight_command():
+    i2c_master.send_byte_command(ord("A"))
