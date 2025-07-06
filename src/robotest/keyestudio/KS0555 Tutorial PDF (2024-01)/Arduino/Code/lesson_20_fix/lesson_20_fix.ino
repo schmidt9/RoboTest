@@ -43,8 +43,7 @@ byte speeds_turn = 200;  //speed for turning left/right
 #define servoPin 10     //servo Pin
 #define light_L_Pin A1  //define the pin of the left photoresistor
 #define light_R_Pin A2  //define the pin of the right photoresistor
-int left_light;
-int right_light;
+#define LIGHT_THRESHOLD 100
 
 #define FLASHLIGHT_PIN A3
 bool isFlashlightOn = false;
@@ -146,8 +145,6 @@ void loop() {
 
       case 'h': Follow(); break;  //enter light following mode
 
-      case 'i': Light_following(); break;  //enter light following mode
-
       case 'u':
         String speeds_l = Serial.readStringUntil('#');
         speeds_L = String(speeds_l).toInt();
@@ -175,19 +172,13 @@ void loop() {
     distance = checkdistance();
     Serial.println(distance);
     delay(50);
-  } else if (ble_val == 'w') {
-    left_light = analogRead(light_L_Pin);
-    Serial.println(left_light);
-    delay(50);
-  } else if (ble_val == 'y') {
-    right_light = analogRead(light_R_Pin);
-    Serial.println(right_light);
-    delay(50);
   }
 
   if (!has_wire_command) {
     handleIRSignal();
   }
+
+  handleLight();
 }
 
 void handleIRSignal() {
@@ -479,15 +470,18 @@ void Dance() {
 }
 
 void ToggleFlashlight() {
-  if (isFlashlightOn) {
-    digitalWrite(FLASHLIGHT_PIN, LOW);
-    Serial.println("Flashlight off");
-  } else {
+  isFlashlightOn = !isFlashlightOn;
+  SetFlashlightOn(isFlashlightOn);
+}
+
+void SetFlashlightOn(bool on) {
+  if (on) {
     digitalWrite(FLASHLIGHT_PIN, HIGH);
     Serial.println("Flashlight on");
+  } else {
+    digitalWrite(FLASHLIGHT_PIN, LOW);
+    Serial.println("Flashlight off");
   }
-
-  isFlashlightOn = !isFlashlightOn;
 }
 
 /*****************obstacle avoidance******************/
@@ -575,33 +569,16 @@ void Follow() {
   }
 }
 
-/****************light following******************/
-void Light_following() {
-  flag = 0;
-  while (flag == 0) {
-    left_light = analogRead(light_L_Pin);
-    right_light = analogRead(light_R_Pin);
-    if (left_light > 650 && right_light > 650)  //go forward
-    {
-      Car_front();
-    } else if (left_light > 650 && right_light <= 650)  //turn left
-    {
-      Car_left();
-    } else if (left_light <= 650 && right_light > 650)  //turn right
-    {
-      Car_right();
-    } else  //or else, stop
-    {
-      Car_Stop();
-    }
-    if (Serial.available()) {
-      ble_val = Serial.read();
-      if (ble_val == 'S') {
-        flag = 1;
-        Car_Stop();
-      }
-    }
-  }
+void handleLight() {
+  int left_light = analogRead(light_L_Pin);
+  int right_light = analogRead(light_R_Pin);
+
+  Serial.println("Light left " + String(left_light) + " right " + String(right_light));
+
+  bool lightOn = (left_light < LIGHT_THRESHOLD || right_light < LIGHT_THRESHOLD);
+  SetFlashlightOn(lightOn);
+
+  delay(50);
 }
 
 /***************dot matrix******************/
